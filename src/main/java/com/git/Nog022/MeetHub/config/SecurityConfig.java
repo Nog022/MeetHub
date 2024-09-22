@@ -1,5 +1,8 @@
 package com.git.Nog022.MeetHub.config;
 
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -16,13 +19,13 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
+@Slf4j
 public class SecurityConfig  {
-
+    public static Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
     @Bean
     public InMemoryUserDetailsManager userDatailService(PasswordEncoder passwordEncoder){
         UserDetails user = User.withUsername("user")
-                .password(passwordEncoder.encode("password"))
+                .password(passwordEncoder.encode("password1"))
                 .roles("USER")
                 .build();
 
@@ -31,22 +34,29 @@ public class SecurityConfig  {
                 .roles("ADMIN")
                 .build();
 
+        logger.info("Senha do user: " + passwordEncoder.encode("password"));
+        logger.info("Senha do admin: " + passwordEncoder.encode("admin"));
+
         return new InMemoryUserDetailsManager(user, admin);
 
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
-        return httpSecurity.authorizeHttpRequests(request -> request.anyRequest()
+        return httpSecurity.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(request -> request.anyRequest()
                 .authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .build();
+
+
     }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+
 
 
 
