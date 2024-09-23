@@ -34,9 +34,6 @@ public class SecurityConfig  {
                 .roles("ADMIN")
                 .build();
 
-        logger.info("Senha do user: " + passwordEncoder.encode("password"));
-        logger.info("Senha do admin: " + passwordEncoder.encode("admin"));
-
         return new InMemoryUserDetailsManager(user, admin);
 
     }
@@ -56,8 +53,6 @@ public class SecurityConfig  {
     public PasswordEncoder passwordEncoder(){
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
-
-
 
 
 
