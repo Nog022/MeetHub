@@ -38,16 +38,13 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable Integer id,@RequestBody @Validated User user){
 
-        User userOtional = userRepository.findById(user.getId()).map(
+        userRepository.findById(id).map(
                 userFind -> {
                     user.setId(userFind.getId());
-                    user.setCpf(userFind.getCpf());
-                    user.setName(userFind.getName());
-                    user.setEmail(userFind.getEmail());
-                    user.setPassword(userFind.getPassword());
-                    user.setCompanyName(userFind.getCompanyName());
+                    userRepository.save(user);
                     return userFind;
                 }
         ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario nao encontrado"));
