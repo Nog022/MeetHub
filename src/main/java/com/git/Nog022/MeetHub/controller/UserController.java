@@ -52,7 +52,6 @@ public class UserController {
                 }
         ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario nao encontrado"));
 
-
     }
 
     @GetMapping("/listAll")
