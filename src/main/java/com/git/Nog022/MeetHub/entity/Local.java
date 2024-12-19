@@ -12,7 +12,7 @@ public class Local {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "LOCATION_ID")
-    private Integer id;
+    private Long id;
 
     @Column(name = "NAME", length = 255)
     @NotEmpty
