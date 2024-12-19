@@ -1,9 +1,6 @@
 package com.git.Nog022.MeetHub.controller;
 
 import com.git.Nog022.MeetHub.entity.Local;
-import com.git.Nog022.MeetHub.entity.Room;
-import com.git.Nog022.MeetHub.entity.User;
-import com.git.Nog022.MeetHub.repository.LocalRepository;
 import com.git.Nog022.MeetHub.service.LocalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,5 +26,23 @@ public class LocalController {
     public List<Local> listRoom(){
         return localService.listLocal();
     }
+
+    @DeleteMapping("/delete/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Integer id){
+        localService.delete(id);
+    }
+
+    @GetMapping("/localById/{id}")
+    public Local localById(@PathVariable Integer id){
+        return localService.localById(id);
+    }
+
+    @PutMapping("/update")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@RequestBody @Validated Local local){
+        localService.update(local);
+    }
+
 
 }

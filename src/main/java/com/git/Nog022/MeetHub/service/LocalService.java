@@ -14,7 +14,9 @@ public interface LocalService {
 
     void delete(Integer id);
 
-    void update(Integer id, Local local);
+    void update(Local local);
 
     List<Local> listLocal   ();
+
+    Local localById(Integer id);
 }

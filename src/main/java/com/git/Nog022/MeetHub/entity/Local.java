@@ -8,11 +8,12 @@ import lombok.Data;
 
 @Data
 @Entity
+@Table(name = "LOCATIONS")
 public class Local {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "LOCATION_ID")
-    private Long id;
+    private Integer id;
 
     @Column(name = "NAME", length = 255)
     @NotEmpty

@@ -5,7 +5,9 @@ import com.git.Nog022.MeetHub.repository.LocalRepository;
 import com.git.Nog022.MeetHub.service.LocalService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -24,17 +26,34 @@ public class LocalServiceImpl implements LocalService {
 
     @Override
     public void delete(Integer id) {
+        localRepository.findById(id).map(localId -> {
+            localRepository.delete(localId);
+            return localId;
+        }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
 
     }
 
     @Override
-    public void update(Integer id, Local local) {
+    public void update(Local local) {
+        localRepository.findById(local.getId()).map(
+                roomFind -> {
+                    local.setId(roomFind.getId());
+                    localRepository.save(local);
+                    return roomFind;
+                }
+        ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
 
     }
 
     @Override
     public List<Local> listLocal() {
         return localRepository.findAll();
+
+    }
+
+    @Override
+    public Local localById(Integer id) {
+        return localRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
 
     }
 }
