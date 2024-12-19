@@ -34,6 +34,7 @@ public class LocalServiceImpl implements LocalService {
 
     @Override
     public List<Local> listLocal() {
-        return List.of();
+        return localRepository.findAll();
+
     }
 }
