@@ -18,9 +18,9 @@ public class Room {
     @Column(name = "capacity", length = 255)
     @NotNull(message = "{capacity.null}")
     private Integer capacity;
-    @Column(name = "place", length = 255)
-    @NotEmpty(message = "{field.required}")
-    private String place;
+    @ManyToOne
+    @JoinColumn(name = "idPlace", referencedColumnName = "LOCATION_ID", nullable = false)
+    private Local local;
     @Column(name = "resources", length = 255)
     private String resources;
 }
