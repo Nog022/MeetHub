@@ -1,5 +1,6 @@
 package com.git.Nog022.MeetHub.service.impl;
 
+import com.git.Nog022.MeetHub.entity.Reservation;
 import com.git.Nog022.MeetHub.entity.Room;
 import com.git.Nog022.MeetHub.repository.RoomRepository;
 import com.git.Nog022.MeetHub.service.RoomService;
@@ -16,7 +17,8 @@ import java.util.List;
 public class RoomServiceImpl implements RoomService {
 
     @Autowired
-    RoomRepository roomRepository;
+    private RoomRepository roomRepository;
+
     @Override
     public Room save(Room room) {
         return roomRepository.save(room);
@@ -41,6 +43,11 @@ public class RoomServiceImpl implements RoomService {
                 }
         ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not find"));
 
+    }
+
+    @Override
+    public Room roomById(Integer id) {
+        return roomRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not find"));
     }
 
     @Override
