@@ -80,6 +80,7 @@ public class ReservationServiceImpl implements ReservationService {
     private boolean checkReservation(Reservation reservation) {
         logger.info("Service Reservation Check");
 
+
        return roomRepository.findById(reservation.getRoom().getId()).map(
                 room -> {
 
@@ -89,6 +90,9 @@ public class ReservationServiceImpl implements ReservationService {
                     }
                     //se não for vazia, verificar cada reserva,
                     //primeiramente conferindo se a data é a do dia atual,
+
+                    //TODO Refazer a logica de verificar da ultima reserva
+                    //**** Pode ocorrer casos que tenha varias reserva e ter conflito pois a ultima reserva permite o cadastro de uma nova no banco de dados **
 
                     Reservation lastReservation = LastElement.getLastElement(room.getReservations());
 
