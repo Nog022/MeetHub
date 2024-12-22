@@ -1,9 +1,13 @@
 package com.git.Nog022.MeetHub.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
+import java.util.List;
+
 @Data
 @Entity
 @Table(name = "ROOMS")
@@ -18,9 +22,18 @@ public class Room {
     @Column(name = "capacity", length = 255)
     @NotNull(message = "{capacity.null}")
     private Integer capacity;
+
     @ManyToOne
     @JoinColumn(name = "idPlace", referencedColumnName = "LOCATION_ID", nullable = false)
     private Local local;
     @Column(name = "resources", length = 255)
     private String resources;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private List<Reservation> reservations;
+
+    @Column(name = "last_reservation_id")
+    private Integer lastReservationId;
+
 }
