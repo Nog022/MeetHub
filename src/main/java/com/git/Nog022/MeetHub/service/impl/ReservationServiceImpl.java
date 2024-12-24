@@ -38,16 +38,18 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public Reservation save(Reservation reservation) {
         logger.info("Service Reservation Save");
-        logger.info(reservation.toString());
+
 
         if(roomRepository != null && roomService != null && reservationRepository != null ) {
             logger.info("Nenhum repository ou service null");
             if (checkReservation(reservation) ) {
                 Room room = roomService.roomById(reservation.getRoom().getId());
                 room.getReservations().add(reservation);
+                reservation = reservationRepository.save(reservation);
                 room.setLastReservationId(reservation.getId());
                 roomService.save(room);
-                return reservationRepository.save(reservation);
+
+                return reservation;
             }
         }
 
@@ -94,22 +96,21 @@ public class ReservationServiceImpl implements ReservationService {
                     //TODO Refazer a logica de verificar da ultima reserva
                     //**** Pode ocorrer casos que tenha varias reserva e ter conflito pois a ultima reserva permite o cadastro de uma nova no banco de dados **
 
-                    Reservation lastReservation = LastElement.getLastElement(room.getReservations());
+                    boolean isNotconflict = true;
+                    for (Reservation existingReservation : room.getReservations()) {
 
-                    //se não for insira a reserva que está no request
-                    if(!lastReservation.getDate().equals(reservation.getDate())){
-                        return true;
+                        if(existingReservation.getDate().equals(reservation.getDate())){
+
+                            if(!(existingReservation.getEndTime().isBefore(reservation.getStartTime()) ||
+                                    reservation.getStartTime().isAfter(existingReservation.getEndTime())) ){
+                                return false;
+                            }
+                        }
                     }
 
-                    //se for do dia atual, verificar o horario que começa e termina, para saber se o horario
-                    // que vamos reserva bate com horario reservado
 
-                    if(lastReservation.getEndTime().isBefore(reservation.getStartTime()) ||
-                            reservation.getStartTime().isAfter(lastReservation.getEndTime()) ){
-                        return true;
-                    }
 
-                    return false;
+                    return true;
 
                 }).orElse(false);
 
