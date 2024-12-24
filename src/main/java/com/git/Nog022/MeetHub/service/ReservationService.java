@@ -17,7 +17,7 @@ public interface ReservationService {
 
     void update(Reservation reservation);
 
-    List<Reservation> listLocal   ();
+    List<Reservation> listReservations();
 
     Reservation reservationById(Integer id);
 }

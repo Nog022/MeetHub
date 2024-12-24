@@ -60,17 +60,28 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void delete(Integer id) {
+        reservationRepository.findById(id).map(reservationId -> {
+            reservationRepository.delete(reservationId);
+            return reservationId;
+        }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
 
     }
 
     @Override
     public void update(Reservation reservation) {
+        reservationRepository.findById(reservation.getId()).map(
+                reservationFind -> {
+                    reservation.setId(reservationFind.getId());
+                    reservationRepository.save(reservation);
+                    return reservationFind;
+                }
+        ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not find"));
 
     }
 
     @Override
-    public List<Reservation> listLocal() {
-        return List.of();
+    public List<Reservation> listReservations() {
+        return reservationRepository.findAll();
     }
 
     @Override
@@ -80,40 +91,21 @@ public class ReservationServiceImpl implements ReservationService {
 
 
     private boolean checkReservation(Reservation reservation) {
-        logger.info("Service Reservation Check");
-
-
        return roomRepository.findById(reservation.getRoom().getId()).map(
                 room -> {
-
                     if(room.getReservations().isEmpty()){
                         return true;
-
                     }
-                    //se não for vazia, verificar cada reserva,
-                    //primeiramente conferindo se a data é a do dia atual,
-
-                    //TODO Refazer a logica de verificar da ultima reserva
-                    //**** Pode ocorrer casos que tenha varias reserva e ter conflito pois a ultima reserva permite o cadastro de uma nova no banco de dados **
-
-                    boolean isNotconflict = true;
                     for (Reservation existingReservation : room.getReservations()) {
-
                         if(existingReservation.getDate().equals(reservation.getDate())){
-
                             if(!(existingReservation.getEndTime().isBefore(reservation.getStartTime()) ||
                                     reservation.getStartTime().isAfter(existingReservation.getEndTime())) ){
                                 return false;
                             }
                         }
                     }
-
-
-
                     return true;
-
                 }).orElse(false);
-
 
     }
 }
