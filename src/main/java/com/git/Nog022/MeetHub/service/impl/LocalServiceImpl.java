@@ -36,10 +36,10 @@ public class LocalServiceImpl implements LocalService {
     @Override
     public void update(Local local) {
         localRepository.findById(local.getId()).map(
-                roomFind -> {
-                    local.setId(roomFind.getId());
+                localFind -> {
+                    local.setId(localFind.getId());
                     localRepository.save(local);
-                    return roomFind;
+                    return localFind;
                 }
         ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
 
