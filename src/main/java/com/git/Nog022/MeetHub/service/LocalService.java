@@ -1,6 +1,6 @@
 package com.git.Nog022.MeetHub.service;
 
-import com.git.Nog022.MeetHub.entity.Room;
+import com.git.Nog022.MeetHub.entity.Local;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -8,15 +8,15 @@ import java.util.List;
 
 @Component
 @Service
-public interface RoomService {
+public interface LocalService {
 
-    Room save(Room room);
+    Local save(Local local);
 
     void delete(Integer id);
 
-    void update(Integer id, Room room);
+    void update(Local local);
 
-    List<Room> listRoom();
+    List<Local> listLocal   ();
 
-    Room roomById(Integer id);
+    Local localById(Integer id);
 }
