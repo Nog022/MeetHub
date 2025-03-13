@@ -1,40 +1,40 @@
-CREATE TABLE USERS (
-                       USER_ID INT AUTO_INCREMENT PRIMARY KEY,
-                       NAME VARCHAR(100) NOT NULL,
-                       EMAIL VARCHAR(100) NOT NULL,
-                       CPF VARCHAR(11),
-                       PASSWORD VARCHAR(100) NOT NULL,
-                       COMPANYNAME VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE LOCATIONS (
-                           LOCATION_ID INT AUTO_INCREMENT PRIMARY KEY,
-                           NAME VARCHAR(255) NOT NULL,
-                           ADDRESS VARCHAR(255) NOT NULL,
-                           CITY VARCHAR(100) NOT NULL,
-                           STATE VARCHAR(100) NOT NULL,
-                           ROOM_TYPE ENUM('HOSPITAL', 'OFFICE', 'UNIVERSITY', 'AUDITORIUM', 'OTHER') NOT NULL,
-                           ROOM_BLOCK_TYPE ENUM('BLOCO_1', 'BLOCO_2', 'BLOCO_3', 'ANDAR_1', 'ANDAR_2', 'ANDAR_3', 'SECTOR_A', 'SECTOR_B', 'SECTOR_C') NOT NULL
-);
-
-CREATE TABLE ROOMS (
-                       ROOM_ID INT AUTO_INCREMENT PRIMARY KEY,
-                       name_room VARCHAR(255) NOT NULL,
-                       capacity VARCHAR(255) NOT NULL,
-                       place VARCHAR(255) NOT NULL,
-                       resources VARCHAR(255),
-                       LOCATION_ID INT,  -- Foreign key to LOCATIONS
-                       FOREIGN KEY (LOCATION_ID) REFERENCES LOCATIONS(LOCATION_ID)
-);
-
-CREATE TABLE RESERVATIONS (
-                              RESERVATION_ID INT AUTO_INCREMENT PRIMARY KEY,
-                              person_name VARCHAR(255) NOT NULL,
-                              chosen_room VARCHAR(255) NOT NULL,
-                              date_time DATE NOT NULL,
-                              ROOM_ID INT NOT NULL,
-                              start_time TIME NOT NULL,
-                              end_time TIME NOT NULL,
-                              event_description VARCHAR(255),
-                              FOREIGN KEY (ROOM_ID) REFERENCES ROOMS(ROOM_ID)
-);
+-- CREATE TABLE USERS (
+--                        USER_ID INT AUTO_INCREMENT PRIMARY KEY,
+--                        NAME VARCHAR(100) NOT NULL,
+--                        EMAIL VARCHAR(100) NOT NULL,
+--                        CPF VARCHAR(11),
+--                        PASSWORD VARCHAR(100) NOT NULL,
+--                        COMPANYNAME VARCHAR(255) NOT NULL
+-- );
+--
+-- CREATE TABLE LOCATIONS (
+--                            LOCATION_ID INT AUTO_INCREMENT PRIMARY KEY,
+--                            NAME VARCHAR(255) NOT NULL,
+--                            ADDRESS VARCHAR(255) NOT NULL,
+--                            CITY VARCHAR(100) NOT NULL,
+--                            STATE VARCHAR(100) NOT NULL,
+--                            ROOM_TYPE ENUM('HOSPITAL', 'OFFICE', 'UNIVERSITY', 'AUDITORIUM', 'OTHER') NOT NULL,
+--                            ROOM_BLOCK_TYPE ENUM('BLOCO_1', 'BLOCO_2', 'BLOCO_3', 'ANDAR_1', 'ANDAR_2', 'ANDAR_3', 'SECTOR_A', 'SECTOR_B', 'SECTOR_C') NOT NULL
+-- );
+--
+-- CREATE TABLE ROOMS (
+--                        ROOM_ID INT AUTO_INCREMENT PRIMARY KEY,
+--                        name_room VARCHAR(255) NOT NULL,
+--                        capacity VARCHAR(255) NOT NULL,
+--                        place VARCHAR(255) NOT NULL,
+--                        resources VARCHAR(255),
+--                        LOCATION_ID INT,  -- Foreign key to LOCATIONS
+--                        FOREIGN KEY (LOCATION_ID) REFERENCES LOCATIONS(LOCATION_ID)
+-- );
+--
+-- CREATE TABLE RESERVATIONS (
+--                               RESERVATION_ID INT AUTO_INCREMENT PRIMARY KEY,
+--                               person_name VARCHAR(255) NOT NULL,
+--                               chosen_room VARCHAR(255) NOT NULL,
+--                               date_time DATE NOT NULL,
+--                               ROOM_ID INT NOT NULL,
+--                               start_time TIME NOT NULL,
+--                               end_time TIME NOT NULL,
+--                               event_description VARCHAR(255),
+--                               FOREIGN KEY (ROOM_ID) REFERENCES ROOMS(ROOM_ID)
+-- );
