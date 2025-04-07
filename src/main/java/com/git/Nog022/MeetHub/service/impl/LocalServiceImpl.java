@@ -56,4 +56,11 @@ public class LocalServiceImpl implements LocalService {
         return localRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
 
     }
+    @Override
+    public boolean verifyAddressAndCityAndState(String address, String city, String state) {
+        if(localRepository.findByAddressAndCityAndState(address, city, state).isPresent()){
+            return true;
+        }
+        return false;
+    }
 }

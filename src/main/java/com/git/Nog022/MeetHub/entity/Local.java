@@ -39,6 +39,11 @@ public class Local {
     @Column(name = "ROOM_BLOCK_TYPE")
     private RoomBlockType roomBlockType;
 
+    @ManyToOne
+    @JoinColumn(name = "COMPANY_ID")
+    private Company company;
+
+
 
 
 }

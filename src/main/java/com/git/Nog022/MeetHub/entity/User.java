@@ -24,6 +24,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "USER_ID")
     private Integer id;
+
     @Column(name = "NAME", length = 100)
     private String name;
 
@@ -38,12 +39,17 @@ public class User implements UserDetails {
 
     @Column(name = "PASSWORD", length = 100)
     private String password;
+
     @Column(name = "COMPANYNAME", length = 255)
     @NotEmpty(message = "{field.required}")
     private String companyName;
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    @ManyToMany
+    @JoinTable(name = "USER_COMPANY", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "COMPANY_ID"))
+    private List<Company> companies;
 
     public User(String name, String email, String cpf, String password, String companyName, UserRole role) {
         this.name = name;

@@ -26,6 +26,7 @@ public class Room {
     @ManyToOne
     @JoinColumn(name = "idPlace", referencedColumnName = "LOCATION_ID", nullable = false)
     private Local local;
+
     @Column(name = "resources", length = 255)
     private String resources;
 

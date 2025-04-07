@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
         userRepository.findById(id).map(userId -> {
             userRepository.delete(userId);
             return userId;
-        }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario nao encontrado"));
+        }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
 
     }
 
@@ -42,11 +42,23 @@ public class UserServiceImpl implements UserService {
                     userRepository.save(user);
                     return userFind;
                 }
-        ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario nao encontrado"));
+        ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
 
     }
     @Transactional
     public List<User> listUser(){
         return userRepository.findAll();
     }
+
+    @Override
+    public boolean findByCpf(String cpf) {
+
+        if(userRepository.findByCpf(cpf).isPresent()){
+            return true;
+        }
+        return false;
+
+    }
+
+
 }
