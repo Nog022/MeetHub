@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface CompanyService {
 
-    Company save(CompanyDTO companyDTO);
+    CompanyDTO save(CompanyDTO companyDTO);
 
 
 }

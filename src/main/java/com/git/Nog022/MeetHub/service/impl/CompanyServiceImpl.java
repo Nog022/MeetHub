@@ -43,7 +43,7 @@ public class CompanyServiceImpl implements CompanyService {
 
 
     @Override
-    public Company save(CompanyDTO companyDTO) {
+    public CompanyDTO save(CompanyDTO companyDTO) {
         logger.info("entrou em salvar company");
 
 
@@ -54,7 +54,8 @@ public class CompanyServiceImpl implements CompanyService {
             company.setName(companyDTO.name());
             company.setLocals(setLocalDTO(companyDTO, company));
             company.setUsers(setUserDTO(companyDTO, company));
-            return companyRepository.save(company);
+            companyRepository.save(company);
+            return companyDTO;
 
         }
 

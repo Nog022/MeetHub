@@ -19,7 +19,7 @@ public class CompanyController {
 
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
-    public Company save(@RequestBody @Validated CompanyDTO companyDTO) {
+    public CompanyDTO save(@RequestBody @Validated CompanyDTO companyDTO) {
         return companyService.save(companyDTO);
     }
 }

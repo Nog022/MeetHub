@@ -9,7 +9,6 @@ public record LocalDTO(
         String city,
         String state,
         RoomLocationType roomLocationType,
-        RoomBlockType roomBlockType,
-        Integer companyId
+        RoomBlockType roomBlockType
 ) {
 }
