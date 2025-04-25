@@ -1,6 +1,7 @@
 package com.git.Nog022.MeetHub.controller;
 
 import com.git.Nog022.MeetHub.dto.CompanyDTO;
+import com.git.Nog022.MeetHub.dto.JoinCompanyDTO;
 import com.git.Nog022.MeetHub.entity.Company;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.service.CompanyService;
@@ -21,5 +22,11 @@ public class CompanyController {
     @ResponseStatus(HttpStatus.CREATED)
     public CompanyDTO save(@RequestBody @Validated CompanyDTO companyDTO) {
         return companyService.save(companyDTO);
+    }
+
+    @PostMapping("/joinCompany")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String join(@RequestBody @Validated JoinCompanyDTO dto) {
+        return companyService.joinCompany(dto);
     }
 }

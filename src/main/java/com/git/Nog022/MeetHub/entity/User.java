@@ -28,6 +28,9 @@ public class User implements UserDetails {
     @Column(name = "NAME", length = 100)
     private String name;
 
+    @Column(nullable = false)
+    private boolean emailVerificado = false;
+
     @Column(name = "EMAIL", length = 100,unique = true)
     @NotEmpty(message = "{field.required}")
     private String email;

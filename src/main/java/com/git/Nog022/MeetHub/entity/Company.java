@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.hibernate.validator.constraints.br.CNPJ;
 
 import java.util.List;
 
@@ -20,6 +21,12 @@ public class Company {
     @NotNull
     @NotEmpty
     private String name;
+
+    @Column(name = "cnpj", length = 14)
+    @NotNull
+    @NotEmpty
+    @CNPJ(message = "invalid cnpj")
+    private String cnpj;
 
     @Column(name = "domain", length = 255)
     private String domain;

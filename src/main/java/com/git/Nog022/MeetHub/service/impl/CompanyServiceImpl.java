@@ -1,10 +1,7 @@
 package com.git.Nog022.MeetHub.service.impl;
 
 import com.git.Nog022.MeetHub.config.SecurityConfig;
-import com.git.Nog022.MeetHub.dto.CompanyDTO;
-import com.git.Nog022.MeetHub.dto.CompanyResponseDTO;
-import com.git.Nog022.MeetHub.dto.LocalDTO;
-import com.git.Nog022.MeetHub.dto.UserDTO;
+import com.git.Nog022.MeetHub.dto.*;
 import com.git.Nog022.MeetHub.entity.Company;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.entity.User;
@@ -51,15 +48,48 @@ public class CompanyServiceImpl implements CompanyService {
             logger.info("entrou no if");
 
             Company company = new Company();
+            company.setCnpj(companyDTO.cnpj());
             company.setName(companyDTO.name());
             company.setLocals(setLocalDTO(companyDTO, company));
             company.setUsers(setUserDTO(companyDTO, company));
+            //domainIsValid(company);
+            company.setDomain(companyDTO.domain() == null ? null : companyDTO.domain());
             companyRepository.save(company);
             return companyDTO;
 
         }
 
         throw new ValidationException("Locals and Users must not be empty.");
+    }
+
+    //TODO terminar metodo
+    @Override
+    public String joinCompany(JoinCompanyDTO dto) {
+        try {
+            User user = userService.findByEmail(dto.email());
+            Company company = companyRepository.findByCnpj(dto.cnpj());
+
+            if (user != null && company != null) {
+                logger.info("entrou em join company");
+                if (company.getDomain() != null ) {
+                    domainIsPresent(user, company);
+                    user.getCompanies().add(company);
+                    company.getUsers().add(user);
+                    userService.save(user);
+                    companyRepository.save(company);
+                    return String.format("The user %s joined the company %s", user.getName(), company.getName());
+                }
+
+
+
+            }
+            throw new ValidationException("User and Comapny is not valid.");
+
+        } catch (Exception e) {
+
+            logger.error("joinCompany erro " + e.getMessage());
+            throw new RuntimeException("Erro while processing join company") ;
+        }
     }
 
     private List<Local> setLocalDTO(CompanyDTO companyDTO, Company company) {
@@ -134,6 +164,33 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
     }
+
+    private boolean domainIsPresent(User user, Company company){
+        logger.info("entrou do domain");
+
+        logger.info("company domain is different of null");
+        String email = user.getEmail();
+        logger.info("user email : {}", email);
+        String userDomain = email.substring(email.indexOf("@"));
+        logger.info("domain email : {}", userDomain);
+        logger.info("domain company email : {}", company.getDomain());
+        return userDomain.equalsIgnoreCase(company.getDomain());
+
+
+
+
+    }
+
+//    private boolean domainIsValid(Company company){
+//        if(companyRepository.findByDomain(company.getDomain()).isEmpty());
+//
+//
+//
+//    }
+
+
+
+
 
 
 }

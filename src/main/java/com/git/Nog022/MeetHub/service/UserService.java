@@ -18,4 +18,6 @@ public interface UserService {
     List<User> listUser();
 
     boolean findByCpf(String cpf);
+
+    User findByEmail(String email);
 }
