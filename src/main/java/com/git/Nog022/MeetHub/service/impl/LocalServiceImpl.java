@@ -1,6 +1,7 @@
 package com.git.Nog022.MeetHub.service.impl;
 
 import com.git.Nog022.MeetHub.entity.Local;
+import com.git.Nog022.MeetHub.exception.ValidationException;
 import com.git.Nog022.MeetHub.repository.LocalRepository;
 import com.git.Nog022.MeetHub.service.LocalService;
 import jakarta.transaction.Transactional;
@@ -21,6 +22,9 @@ public class LocalServiceImpl implements LocalService {
 
     @Override
     public Local save(Local local) {
+        if(verifyLocalExist(local.getAddress(), local.getCity(), local.getState())) {
+            throw new ValidationException("Address, City and State are not valid");
+        }
         return localRepository.save(local);
     }
 
@@ -55,5 +59,28 @@ public class LocalServiceImpl implements LocalService {
     public Local localById(Integer id) {
         return localRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
 
+    }
+    @Override
+    public boolean verifyAddressAndCityAndState(String address, String city, String state) {
+        if(localRepository.findByAddressAndCityAndState(address, city, state).isPresent()){
+            return true;
+        }
+        return false;
+    }
+
+
+    private boolean verifyLocalExist(String address, String city, String state) {
+        if(verifyAddressAndCityAndState(address, city, state)){
+            return true;
+        }
+        List<Local> localsWithSameAddress = localRepository.findByAddress(address);
+
+        for (Local local : localsWithSameAddress) {
+            if (local.getCity().equalsIgnoreCase(city) && local.getState().equalsIgnoreCase(state)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

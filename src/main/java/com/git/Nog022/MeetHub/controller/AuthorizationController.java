@@ -7,6 +7,8 @@ import com.git.Nog022.MeetHub.dto.RegisterDTO;
 import com.git.Nog022.MeetHub.entity.User;
 import com.git.Nog022.MeetHub.enums.UserRole;
 import com.git.Nog022.MeetHub.repository.UserRepository;
+import com.git.Nog022.MeetHub.service.EmailService;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/auth")
@@ -38,11 +41,26 @@ public class AuthorizationController {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private EmailService emailService;
+
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody @Validated AuthorizationDTO data) {
         try {
             logger.info("Iniciando login");
             logger.info("Dados recebidos: Email: {}, Senha: {}", data.email(), data.password());
+
+            // Buscar usuário no banco
+            User user = this.usuarioRepository.findByEmail(data.email())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário not fould"));
+
+            // Verificar se o e-mail foi confirmado
+            if (!user.isEmailVerificado()) {
+                logger.warn("Login attempt with unverified email: {}", data.email());
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(new LoginResponseDTO("Email not verified. Please check your inbox."));
+            }
 
             // Criando o token de autenticação com CPF e senha
             var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
@@ -60,6 +78,8 @@ public class AuthorizationController {
             var token = tokenService.generateToken(usuario);
             logger.info("Token JWT gerado com sucesso");
 
+            //TODO Fazer a logica para que se o usuario conseguir logar, verificar se o email dele possui um dominio de alguma empresa ja cadastrada.
+            
             // Retornando a resposta com o token
             return ResponseEntity.ok(new LoginResponseDTO(token));
         } catch (Exception e) {
@@ -77,10 +97,11 @@ public class AuthorizationController {
 
 
         if(this.usuarioRepository.findByEmail(registerDTO.email()).isPresent()) return ResponseEntity.badRequest().build();
+
         logger.info("Dados não registrados");
         String encryptPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
         logger.info("encryptPassword ");
-        User usuario = new User(
+        User user = new User(
                 registerDTO.name(),
                 registerDTO.email(),
                 registerDTO.cpf(),
@@ -90,18 +111,52 @@ public class AuthorizationController {
                 UserRole.USER
 
         );
-        logger.info("user: {} ", usuario);
+        logger.info("user: {} ", user);
 
 
         if(usuarioRepository != null){
-            logger.info(" usuarioRepository existe");
-            return ResponseEntity.ok(usuarioRepository.save(usuario));
+            logger.info("saving...");
+            usuarioRepository.save(user);
+            logger.info("saved!!!");
+
+            String token = emailService.gerarToken(user.getEmail());
+            String link = "http://localhost:8080/auth/checkEmail?token=" + token;
+            logger.info("link: {} e email: {}", link, user.getEmail());
+            emailService.enviarEmailConfirmacao(user.getEmail(), link);
+
+            return ResponseEntity.ok(user);
         }
-        logger.info(" usuarioRepository é nullo");
+
+        logger.info(" usuarioRepository is nullo");
         return ResponseEntity.badRequest().build();
 
 
     }
+
+    @GetMapping("/checkEmail")
+    public ResponseEntity<String> confirmarEmail(@RequestParam String token) {
+        try {
+            logger.info("checkEmail()");
+            String email = emailService.validarToken(token);
+
+            User user = usuarioRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Usuário not fould"));
+
+            if (user.isEmailVerificado()) {
+                return ResponseEntity.ok("E-mail já foi confirmado.");
+            }
+
+            user.setEmailVerificado(true);
+            usuarioRepository.save(user);
+            logger.info("validado email");
+            return ResponseEntity.ok("E-mail confirmado com sucesso!");
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token expirado.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token inválido.");
+        }
+    }
+
 
 
 }

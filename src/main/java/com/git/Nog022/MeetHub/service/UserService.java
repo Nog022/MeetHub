@@ -16,4 +16,8 @@ public interface UserService {
     void update(Integer id, User user);
 
     List<User> listUser();
+
+    boolean findByCpf(String cpf);
+
+    User findByEmail(String email);
 }

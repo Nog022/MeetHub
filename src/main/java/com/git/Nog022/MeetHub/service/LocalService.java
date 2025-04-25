@@ -19,4 +19,6 @@ public interface LocalService {
     List<Local> listLocal   ();
 
     Local localById(Integer id);
+
+    boolean verifyAddressAndCityAndState(String address, String city, String state);
 }
