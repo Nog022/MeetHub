@@ -5,6 +5,7 @@ import com.git.Nog022.MeetHub.dto.*;
 import com.git.Nog022.MeetHub.entity.Company;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.entity.User;
+import com.git.Nog022.MeetHub.enums.UserRole;
 import com.git.Nog022.MeetHub.exception.ValidationException;
 import com.git.Nog022.MeetHub.repository.CompanyRepository;
 import com.git.Nog022.MeetHub.service.CompanyService;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -42,48 +44,48 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public CompanyDTO save(CompanyDTO companyDTO) {
         logger.info("entrou em salvar company");
+        User user = userService.findByEmail(companyDTO.userEmail());
 
-
-        if(verifyLocal(companyDTO) && verifyUser(companyDTO)) {
+        if(verifyLocal(companyDTO) && user != null) {
             logger.info("entrou no if");
 
             Company company = new Company();
             company.setCnpj(companyDTO.cnpj());
             company.setName(companyDTO.name());
             company.setLocals(setLocalDTO(companyDTO, company));
-            company.setUsers(setUserDTO(companyDTO, company));
-            //domainIsValid(company);
+            company.setUsers(new ArrayList<>());
+            company.getUsers().add(setUserDTO(user, company));
             company.setDomain(companyDTO.domain() == null ? null : companyDTO.domain());
             companyRepository.save(company);
+            userService.save(user);
             return companyDTO;
 
         }
 
-        throw new ValidationException("Locals and Users must not be empty.");
+        throw new ValidationException("Erro Save Company");
     }
 
     //TODO terminar metodo
     @Override
-    public String joinCompany(JoinCompanyDTO dto) {
+    public void joinCompanyWithDomain(User user) {
         try {
-            User user = userService.findByEmail(dto.email());
-            Company company = companyRepository.findByCnpj(dto.cnpj());
+            logger.info("entrou em join company");
+            String domain = user.getEmail().substring(user.getEmail().indexOf("@") + 1);
+            logger.info("domain: " + domain);
+            Optional<Company> optionalCompany = companyRepository.findByDomainIgnoreCase(domain);
 
-            if (user != null && company != null) {
-                logger.info("entrou em join company");
-                if (company.getDomain() != null ) {
-                    domainIsPresent(user, company);
-                    user.getCompanies().add(company);
-                    company.getUsers().add(user);
-                    userService.save(user);
-                    companyRepository.save(company);
-                    return String.format("The user %s joined the company %s", user.getName(), company.getName());
-                }
-
-
+            if (optionalCompany.isPresent()) {
+                logger.error("Empresa encontrada");
+                Company company = optionalCompany.get();
+                company.getUsers().add(user);
+                user.getCompanies().add(company);
+                userService.save(user);
+                companyRepository.save(company);
 
             }
-            throw new ValidationException("User and Comapny is not valid.");
+
+            logger.info("Nenhuma empresa encontrada com o domínio: " + domain);
+
 
         } catch (Exception e) {
 
@@ -92,8 +94,31 @@ public class CompanyServiceImpl implements CompanyService {
         }
     }
 
-    private List<Local> setLocalDTO(CompanyDTO companyDTO, Company company) {
+    @Override
+    public List<UserDTO> findAllUsers(String cnpj) {
+        Company company = companyRepository.findByCnpj(cnpj);
+        List<User> users = company.getUsers(); // assumindo que é uma lista!
+        List<UserDTO> userDTOs = new ArrayList<>();
 
+        for (User user : users) {
+            UserDTO dto = new UserDTO(
+                    user.getName(),
+                    user.getEmail(),
+                    user.getCpf(),
+                    user.getCompanyName(),
+                    user.getRole()
+
+            );
+            userDTOs.add(dto);
+        }
+
+        return userDTOs;
+    }
+
+
+
+    private List<Local> setLocalDTO(CompanyDTO companyDTO, Company company) {
+        logger.info("entrou em setLocalDTO");
         List<Local> locals = new ArrayList<>();
         companyDTO.locals().forEach(localDTO -> {
             Local local = new Local();
@@ -110,24 +135,11 @@ public class CompanyServiceImpl implements CompanyService {
         return locals;
     }
 
-    private List<User> setUserDTO(CompanyDTO companyDTO, Company company) {
-
-        List<User> users = new ArrayList<>();
-        List<Company> companies = new ArrayList<>();
-        companies.add(company);
-        companyDTO.user().forEach(userDTO -> {
-            User user = new User();
-            user.setName(userDTO.name());
-            user.setCpf(userDTO.cpf());
-            user.setEmail(userDTO.email());
-            user.setPassword(userDTO.password());
-            user.setRole(userDTO.role());
-            user.setCompanyName(userDTO.companyName());
-            user.setCompanies(companies);
-            users.add(user);
-        });
-
-        return users;
+    private User setUserDTO(User user, Company company) {
+        logger.info("entrou em setUserDTO");
+        user.getCompanies().add(company);
+        user.setRole(UserRole.ADMIN);
+        return user;
     }
 
 
@@ -149,37 +161,19 @@ public class CompanyServiceImpl implements CompanyService {
 
     }
 
-    private boolean verifyUser(CompanyDTO companyDTO ){
-        try {
-            for(UserDTO user : companyDTO.user()){
-                if(!userService.findByCpf(user.cpf())){
-                    return false;
-                }
-
-            }
-            return true;
-        }catch(Exception e){
-            logger.error("verifyUser erro" + e.getMessage());
-            throw new IllegalArgumentException("User must not be empty.");
-        }
-
-    }
-
-    private boolean domainIsPresent(User user, Company company){
-        logger.info("entrou do domain");
-
-        logger.info("company domain is different of null");
-        String email = user.getEmail();
-        logger.info("user email : {}", email);
-        String userDomain = email.substring(email.indexOf("@"));
-        logger.info("domain email : {}", userDomain);
-        logger.info("domain company email : {}", company.getDomain());
-        return userDomain.equalsIgnoreCase(company.getDomain());
 
 
-
-
-    }
+//    private boolean companyExistsByUserEmail(String email){
+//        logger.info("entrou do domain");
+//
+//
+//        String domain = email.substring(email.indexOf("@") + 1);
+//        return companyRepository.existsByDomain(domain);
+//
+//
+//
+//
+//    }
 
 //    private boolean domainIsValid(Company company){
 //        if(companyRepository.findByDomain(company.getDomain()).isEmpty());

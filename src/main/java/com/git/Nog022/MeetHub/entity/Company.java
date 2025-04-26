@@ -28,7 +28,7 @@ public class Company {
     @CNPJ(message = "invalid cnpj")
     private String cnpj;
 
-    @Column(name = "domain", length = 255)
+    @Column(name = "domain", length = 255, unique = true)
     private String domain;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

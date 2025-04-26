@@ -7,6 +7,7 @@ import com.git.Nog022.MeetHub.dto.RegisterDTO;
 import com.git.Nog022.MeetHub.entity.User;
 import com.git.Nog022.MeetHub.enums.UserRole;
 import com.git.Nog022.MeetHub.repository.UserRepository;
+import com.git.Nog022.MeetHub.service.CompanyService;
 import com.git.Nog022.MeetHub.service.EmailService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,9 @@ public class AuthorizationController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private CompanyService companyService;
+
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody @Validated AuthorizationDTO data) {
         try {
@@ -79,7 +83,9 @@ public class AuthorizationController {
             logger.info("Token JWT gerado com sucesso");
 
             //TODO Fazer a logica para que se o usuario conseguir logar, verificar se o email dele possui um dominio de alguma empresa ja cadastrada.
-            
+
+            companyService.joinCompanyWithDomain(user);
+
             // Retornando a resposta com o token
             return ResponseEntity.ok(new LoginResponseDTO(token));
         } catch (Exception e) {

@@ -10,7 +10,7 @@ public record CompanyDTO(
         String name,
         String domain,
         List<LocalDTO> locals,
-        List<UserDTO> user
+        String userEmail
 
 ) {
 }
