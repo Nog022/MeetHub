@@ -54,11 +54,11 @@ public class AuthorizationController {
             logger.info("Iniciando login");
             logger.info("Dados recebidos: Email: {}, Senha: {}", data.email(), data.password());
 
-            // Buscar usuário no banco
+
             User user = this.usuarioRepository.findByEmail(data.email())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário not fould"));
 
-            // Verificar se o e-mail foi confirmado
+
             if (!user.isEmailVerificado()) {
                 logger.warn("Login attempt with unverified email: {}", data.email());
                 return ResponseEntity
@@ -66,23 +66,23 @@ public class AuthorizationController {
                         .body(new LoginResponseDTO("Email not verified. Please check your inbox."));
             }
 
-            // Criando o token de autenticação com CPF e senha
+
             var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
             logger.info("Token de autenticação gerado: {}", usernamePassword);
 
-            // Autenticando o usuário
+
             var auth = this.authenticationManager.authenticate(usernamePassword);
             logger.info("Autenticação bem-sucedida");
 
-            // Recuperando o usuário autenticado
+
             var usuario = (User) auth.getPrincipal();
             logger.info("Usuário autenticado: {}", usuario.getName());
 
-            // Gerando o token JWT para o usuário autenticado
+
             var token = tokenService.generateToken(usuario);
             logger.info("Token JWT gerado com sucesso");
 
-            //TODO Fazer a logica para que se o usuario conseguir logar, verificar se o email dele possui um dominio de alguma empresa ja cadastrada.
+
 
             companyService.joinCompanyWithDomain(user);
 
