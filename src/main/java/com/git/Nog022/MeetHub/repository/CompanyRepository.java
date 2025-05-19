@@ -17,7 +17,10 @@ import java.util.Optional;
 public interface CompanyRepository extends JpaRepository<Company, Long> {
     Company findByCnpj(@NotNull @NotEmpty @CNPJ(message = "invalid cnpj") String cnpj);
 
-    List<Company> findByDomain(String domain);
+    //List<Company> findByDomain(String domain);
 
-    Optional<Company> findByDomainIgnoreCase(String domain);
+
+    Optional<Company> findByDomains (String domain);
+
+
 }

@@ -22,4 +22,6 @@ public interface CompanyService {
 
     List<UserDTO> findAllUsers(String cnpj);
 
+    void joinCompanyWithDomain(String email);
+
 }

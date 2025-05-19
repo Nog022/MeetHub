@@ -36,10 +36,10 @@ public class CompanyController {
 
 
 
-    //TODO fazer um metodo para entrar em empresas que não possuem dominio
-//    @PostMapping("/joinCompany")
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public String join(@RequestBody @Validated JoinCompanyDTO dto) {
-//        return companyService.joinCompanyWithDomain(dto);
-//    }
+     //fazer um metodo para entrar em empresas que não possuem dominio
+    @PostMapping("/refresh")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void join(@RequestBody @Validated String email) {
+        companyService.joinCompanyWithDomain(email);
+    }
 }

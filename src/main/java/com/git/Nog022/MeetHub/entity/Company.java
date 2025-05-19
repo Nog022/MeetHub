@@ -28,8 +28,10 @@ public class Company {
     @CNPJ(message = "invalid cnpj")
     private String cnpj;
 
+    @ElementCollection
     @Column(name = "domain", length = 255, unique = true)
-    private String domain;
+    private List<String> domains;
+
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Local> locals;

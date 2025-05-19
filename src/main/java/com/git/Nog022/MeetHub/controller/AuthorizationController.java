@@ -83,8 +83,10 @@ public class AuthorizationController {
             logger.info("Token JWT gerado com sucesso");
 
 
+            if(user.getCompanies().isEmpty()) {
+                companyService.joinCompanyWithDomain(user);
+            }
 
-            companyService.joinCompanyWithDomain(user);
 
             // Retornando a resposta com o token
             return ResponseEntity.ok(new LoginResponseDTO(token));
