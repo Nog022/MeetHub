@@ -4,7 +4,7 @@
 --                        EMAIL VARCHAR(100) NOT NULL,
 --                        CPF VARCHAR(11),
 --                        PASSWORD VARCHAR(100) NOT NULL,
---                        COMPANYNAME VARCHAR(255) NOT NULL
+
 -- );
 --
 -- CREATE TABLE LOCATIONS (

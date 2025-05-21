@@ -7,6 +7,5 @@ public record UserDTO(
         String name,
         String email,
         String cpf,
-        String companyName,
         UserRole role
 ) {}

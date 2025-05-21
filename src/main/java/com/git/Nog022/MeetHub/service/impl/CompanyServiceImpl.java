@@ -134,7 +134,6 @@ public class CompanyServiceImpl implements CompanyService {
                     user.getName(),
                     user.getEmail(),
                     user.getCpf(),
-                    user.getCompanyName(),
                     user.getRole()
 
             );

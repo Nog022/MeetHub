@@ -114,7 +114,6 @@ public class AuthorizationController {
                 registerDTO.email(),
                 registerDTO.cpf(),
                 encryptPassword,
-                registerDTO.companyName(),
 
                 UserRole.USER
 

@@ -43,10 +43,6 @@ public class User implements UserDetails {
     @Column(name = "PASSWORD", length = 100)
     private String password;
 
-    @Column(name = "COMPANYNAME", length = 255)
-    @NotEmpty(message = "{field.required}")
-    private String companyName;
-
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
@@ -54,12 +50,11 @@ public class User implements UserDetails {
     @JoinTable(name = "USER_COMPANY", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "COMPANY_ID"))
     private List<Company> companies;
 
-    public User(String name, String email, String cpf, String password, String companyName, UserRole role) {
+    public User(String name, String email, String cpf, String password, UserRole role) {
         this.name = name;
         this.email = email;
         this.cpf = cpf;
         this.password = password;
-        this.companyName = companyName;
         this.role = role;
     }
 

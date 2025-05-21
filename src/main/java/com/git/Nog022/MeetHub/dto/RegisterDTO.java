@@ -7,9 +7,7 @@ public record RegisterDTO(
 
      String cpf,
 
-     String password,
-
-     String companyName
+     String password
 ) {
 
 }
