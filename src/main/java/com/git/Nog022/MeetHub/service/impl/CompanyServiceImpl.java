@@ -5,11 +5,13 @@ import com.git.Nog022.MeetHub.dto.*;
 import com.git.Nog022.MeetHub.entity.Company;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.entity.User;
+import com.git.Nog022.MeetHub.enums.UserRole;
 import com.git.Nog022.MeetHub.exception.ValidationException;
 import com.git.Nog022.MeetHub.repository.CompanyRepository;
 import com.git.Nog022.MeetHub.service.CompanyService;
 import com.git.Nog022.MeetHub.service.LocalService;
 import com.git.Nog022.MeetHub.service.UserService;
+import com.git.Nog022.MeetHub.service.ValidateDomainService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -31,155 +35,173 @@ public class CompanyServiceImpl implements CompanyService {
     private CompanyRepository companyRepository;
 
 
-
-    @Autowired
-    private LocalService localService;
-
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ValidateDomainService validateDomainService;
 
 
     @Override
     public CompanyDTO save(CompanyDTO companyDTO) {
         logger.info("entrou em salvar company");
+        User user = userService.findByEmail(companyDTO.userEmail());
 
 
-        if(verifyLocal(companyDTO) && verifyUser(companyDTO)) {
+        if(user != null && companyRepository.findByCnpj(companyDTO.cnpj()) == null) {
             logger.info("entrou no if");
 
             Company company = new Company();
             company.setCnpj(companyDTO.cnpj());
             company.setName(companyDTO.name());
-            company.setLocals(setLocalDTO(companyDTO, company));
-            company.setUsers(setUserDTO(companyDTO, company));
-            //domainIsValid(company);
-            company.setDomain(companyDTO.domain() == null ? null : companyDTO.domain());
+            company.setLocals(null);
+            company.setUsers(new ArrayList<>());
+            company.getUsers().add(setUserDTO(user, company));
+            company.setDomains(companyDTO.domain() == null ? Collections.emptyList() : new ArrayList<>(companyDTO.domain()));
             companyRepository.save(company);
+            userService.save(user);
             return companyDTO;
 
         }
 
-        throw new ValidationException("Locals and Users must not be empty.");
+        throw new ValidationException("Erro Save Company");
     }
 
-    //TODO terminar metodo
+
     @Override
-    public String joinCompany(JoinCompanyDTO dto) {
+    public void joinCompanyWithDomain(User user) {
         try {
-            User user = userService.findByEmail(dto.email());
-            Company company = companyRepository.findByCnpj(dto.cnpj());
+            Optional<Company> optionalCompany = validateDomainService.validateDomain(user.getEmail());
 
-            if (user != null && company != null) {
-                logger.info("entrou em join company");
-                if (company.getDomain() != null ) {
-                    domainIsPresent(user, company);
-                    user.getCompanies().add(company);
-                    company.getUsers().add(user);
-                    userService.save(user);
-                    companyRepository.save(company);
-                    return String.format("The user %s joined the company %s", user.getName(), company.getName());
-                }
+            if (optionalCompany.isPresent()) {
+                logger.info("Empresa encontrada");
+                Company company = optionalCompany.get();
+                company.getUsers().add(user);
+                user.getCompanies().add(company);
+                userService.save(user);
+                companyRepository.save(company);
 
-
-
+            }else{
+                logger.info("The email " + user.getEmail() + " is not valid");
             }
-            throw new ValidationException("User and Comapny is not valid.");
 
         } catch (Exception e) {
-
             logger.error("joinCompany erro " + e.getMessage());
             throw new RuntimeException("Erro while processing join company") ;
         }
     }
 
-    private List<Local> setLocalDTO(CompanyDTO companyDTO, Company company) {
-
-        List<Local> locals = new ArrayList<>();
-        companyDTO.locals().forEach(localDTO -> {
-            Local local = new Local();
-            local.setName(localDTO.name());
-            local.setAddress(localDTO.address());
-            local.setCity(localDTO.city());
-            local.setState(localDTO.state());
-            local.setRoomBlockType(localDTO.roomBlockType());
-            local.setRoomLocationType(localDTO.roomLocationType());
-            local.setCompany(company);
-            locals.add(local);
-        });
-
-        return locals;
-    }
-
-    private List<User> setUserDTO(CompanyDTO companyDTO, Company company) {
-
-        List<User> users = new ArrayList<>();
-        List<Company> companies = new ArrayList<>();
-        companies.add(company);
-        companyDTO.user().forEach(userDTO -> {
-            User user = new User();
-            user.setName(userDTO.name());
-            user.setCpf(userDTO.cpf());
-            user.setEmail(userDTO.email());
-            user.setPassword(userDTO.password());
-            user.setRole(userDTO.role());
-            user.setCompanyName(userDTO.companyName());
-            user.setCompanies(companies);
-            users.add(user);
-        });
-
-        return users;
-    }
-
-
-    private boolean verifyLocal(CompanyDTO companyDTO ){
+    //TODO terminar a parte do refresh
+    @Override
+    public void joinCompanyWithDomain(String email) {
         try {
-            for(LocalDTO localDTO : companyDTO.locals()){
-                if(!localService.verifyAddressAndCityAndState(localDTO.address(), localDTO.city(), localDTO.state())){
-                    return false;
-                }
+            logger.info("joinCompanyWithDomain()");
+            User user = userService.findByEmail(email);
 
+            logger.info("User: " + user);
+            Optional<Company> optionalCompany = validateDomainService.validateDomain(email);
+            logger.info("Company encontrada: "  + optionalCompany);
+
+            if (optionalCompany.isPresent() && user.getCompanies().isEmpty()) {
+                logger.info("Empresa encontrada");
+                Company company = optionalCompany.get();
+                company.getUsers().add(user);
+                user.getCompanies().add(company);
+                userService.save(user);
+                companyRepository.save(company);
+
+            }else{
+                logger.info("The email " + user.getEmail() + " is not valid");
             }
-            return true;
 
-        }catch(Exception e){
-            logger.error("verifyLocal erro " + e.getMessage());
-            throw new IllegalArgumentException("Locals must not be empty.");
+        } catch (Exception e) {
+            logger.error("joinCompany erro " + e.getMessage());
+            throw new RuntimeException("Erro while processing join company") ;
+        }
+    }
+
+
+
+
+    @Override
+    public List<UserDTO> findAllUsers(String cnpj) {
+        Company company = companyRepository.findByCnpj(cnpj);
+        List<User> users = company.getUsers();
+        List<UserDTO> userDTOs = new ArrayList<>();
+
+        for (User user : users) {
+            UserDTO dto = new UserDTO(
+                    user.getName(),
+                    user.getEmail(),
+                    user.getCpf(),
+                    user.getRole()
+
+            );
+            userDTOs.add(dto);
         }
 
-
+        return userDTOs;
     }
 
-    private boolean verifyUser(CompanyDTO companyDTO ){
-        try {
-            for(UserDTO user : companyDTO.user()){
-                if(!userService.findByCpf(user.cpf())){
-                    return false;
-                }
 
-            }
-            return true;
-        }catch(Exception e){
-            logger.error("verifyUser erro" + e.getMessage());
-            throw new IllegalArgumentException("User must not be empty.");
-        }
 
+//    private List<Local> setLocalDTO(CompanyDTO companyDTO, Company company) {
+//        logger.info("entrou em setLocalDTO");
+//        List<Local> locals = new ArrayList<>();
+//        companyDTO.locals().forEach(localDTO -> {
+//            Local local = new Local();
+//            local.setName(localDTO.name());
+//            local.setAddress(localDTO.address());
+//            local.setCity(localDTO.city());
+//            local.setState(localDTO.state());
+//            local.setRoomBlockType(localDTO.roomBlockType());
+//            local.setRoomLocationType(localDTO.roomLocationType());
+//            local.setCompany(company);
+//            locals.add(local);
+//        });
+//
+//        return locals;
+//    }
+
+    private User setUserDTO(User user, Company company) {
+        logger.info("entrou em setUserDTO");
+        user.getCompanies().add(company);
+        user.setRole(UserRole.ADMIN);
+        return user;
     }
 
-    private boolean domainIsPresent(User user, Company company){
-        logger.info("entrou do domain");
 
-        logger.info("company domain is different of null");
-        String email = user.getEmail();
-        logger.info("user email : {}", email);
-        String userDomain = email.substring(email.indexOf("@"));
-        logger.info("domain email : {}", userDomain);
-        logger.info("domain company email : {}", company.getDomain());
-        return userDomain.equalsIgnoreCase(company.getDomain());
+//    private boolean verifyLocal(CompanyDTO companyDTO ){
+//        try {
+//            for(LocalDTO localDTO : companyDTO.locals()){
+//                if(!localService.verifyAddressAndCityAndState(localDTO.address(), localDTO.city(), localDTO.state())){
+//                    return false;
+//                }
+//
+//            }
+//            return true;
+//
+//        }catch(Exception e){
+//            logger.error("verifyLocal erro " + e.getMessage());
+//            throw new IllegalArgumentException("Locals must not be empty.");
+//        }
+//
+//
+//    }
 
 
 
-
-    }
+//    private boolean companyExistsByUserEmail(String email){
+//        logger.info("entrou do domain");
+//
+//
+//        String domain = email.substring(email.indexOf("@") + 1);
+//        return companyRepository.existsByDomain(domain);
+//
+//
+//
+//
+//    }
 
 //    private boolean domainIsValid(Company company){
 //        if(companyRepository.findByDomain(company.getDomain()).isEmpty());

@@ -7,6 +7,7 @@ import com.git.Nog022.MeetHub.dto.RegisterDTO;
 import com.git.Nog022.MeetHub.entity.User;
 import com.git.Nog022.MeetHub.enums.UserRole;
 import com.git.Nog022.MeetHub.repository.UserRepository;
+import com.git.Nog022.MeetHub.service.CompanyService;
 import com.git.Nog022.MeetHub.service.EmailService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
@@ -44,17 +45,20 @@ public class AuthorizationController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private CompanyService companyService;
+
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody @Validated AuthorizationDTO data) {
         try {
             logger.info("Iniciando login");
             logger.info("Dados recebidos: Email: {}, Senha: {}", data.email(), data.password());
 
-            // Buscar usuário no banco
+
             User user = this.usuarioRepository.findByEmail(data.email())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário not fould"));
 
-            // Verificar se o e-mail foi confirmado
+
             if (!user.isEmailVerificado()) {
                 logger.warn("Login attempt with unverified email: {}", data.email());
                 return ResponseEntity
@@ -62,24 +66,28 @@ public class AuthorizationController {
                         .body(new LoginResponseDTO("Email not verified. Please check your inbox."));
             }
 
-            // Criando o token de autenticação com CPF e senha
+
             var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
             logger.info("Token de autenticação gerado: {}", usernamePassword);
 
-            // Autenticando o usuário
+
             var auth = this.authenticationManager.authenticate(usernamePassword);
             logger.info("Autenticação bem-sucedida");
 
-            // Recuperando o usuário autenticado
+
             var usuario = (User) auth.getPrincipal();
             logger.info("Usuário autenticado: {}", usuario.getName());
 
-            // Gerando o token JWT para o usuário autenticado
+
             var token = tokenService.generateToken(usuario);
             logger.info("Token JWT gerado com sucesso");
 
-            //TODO Fazer a logica para que se o usuario conseguir logar, verificar se o email dele possui um dominio de alguma empresa ja cadastrada.
-            
+
+            if(user.getCompanies().isEmpty()) {
+                companyService.joinCompanyWithDomain(user);
+            }
+
+
             // Retornando a resposta com o token
             return ResponseEntity.ok(new LoginResponseDTO(token));
         } catch (Exception e) {
@@ -106,7 +114,6 @@ public class AuthorizationController {
                 registerDTO.email(),
                 registerDTO.cpf(),
                 encryptPassword,
-                registerDTO.companyName(),
 
                 UserRole.USER
 

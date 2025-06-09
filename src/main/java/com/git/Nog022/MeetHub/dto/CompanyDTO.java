@@ -8,9 +8,8 @@ import java.util.List;
 public record CompanyDTO(
         String cnpj,
         String name,
-        String domain,
-        List<LocalDTO> locals,
-        List<UserDTO> user
+        List<String> domain,
+        String userEmail
 
 ) {
 }
