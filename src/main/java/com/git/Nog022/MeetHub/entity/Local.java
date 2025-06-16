@@ -15,6 +15,9 @@ public class Local {
     @Column(name = "LOCATION_ID")
     private Integer id;
 
+    @Column(name = "CEP", length = 10)
+    private String cep;
+
     @Column(name = "NAME", length = 255)
     @NotEmpty
     private String name;
@@ -27,17 +30,16 @@ public class Local {
     @NotEmpty
     private String city;
 
+    @Column(name = "NEIGHBORHOOD", length = 100)
+    private String neighborhood;
+
+    @Column(name = "NUMBER", length = 10)
+    @NotEmpty
+    private String number;
+
     @Column(name = "STATE", length = 100)
     @NotEmpty
     private String state;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "ROOM_TYPE")
-    private RoomLocationType roomLocationType;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "ROOM_BLOCK_TYPE")
-    private RoomBlockType roomBlockType;
 
     @ManyToOne
     @JoinColumn(name = "COMPANY_ID")

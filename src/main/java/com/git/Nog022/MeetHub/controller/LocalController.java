@@ -1,5 +1,6 @@
 package com.git.Nog022.MeetHub.controller;
 
+import com.git.Nog022.MeetHub.dto.ViaCepResponseDTO;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.service.LocalService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,4 +54,11 @@ public class LocalController {
     }
 
 
+    @GetMapping("/findAddressByZipCode/{cep}")
+    @Operation(summary = "Get a info by cep", description = "Returns the details of a local by its cep")
+    public ViaCepResponseDTO findAddressByZipCode(@PathVariable String cep) {
+        return localService.findAddressByZipCode(cep);
+    }
+
+    ;
 }
