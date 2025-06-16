@@ -1,5 +1,6 @@
 package com.git.Nog022.MeetHub.service;
 
+import com.git.Nog022.MeetHub.dto.ViaCepResponseDTO;
 import com.git.Nog022.MeetHub.entity.Local;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -21,4 +22,6 @@ public interface LocalService {
     Local localById(Integer id);
 
     boolean verifyAddressAndCityAndState(String address, String city, String state);
+
+    ViaCepResponseDTO findAddressByZipCode(String cep);
 }

@@ -1,23 +1,34 @@
 package com.git.Nog022.MeetHub.service.impl;
 
+import com.git.Nog022.MeetHub.dto.ViaCepResponseDTO;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.exception.ValidationException;
 import com.git.Nog022.MeetHub.repository.LocalRepository;
 import com.git.Nog022.MeetHub.service.LocalService;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @Service
 @Transactional
+@Slf4j
 public class LocalServiceImpl implements LocalService {
 
     @Autowired
     private LocalRepository localRepository;
+
+
+    private final RestTemplate restTemplate;
+
+    public LocalServiceImpl(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
 
     @Override
@@ -83,4 +94,22 @@ public class LocalServiceImpl implements LocalService {
 
         return false;
     }
+
+    public ViaCepResponseDTO findAddressByZipCode(String cep) {
+        try {
+            log.info("findAddressByZipCode()");
+            String url = "https://viacep.com.br/ws/" + cep + "/json/";
+            ViaCepResponseDTO response = restTemplate.getForObject(url, ViaCepResponseDTO.class);
+
+            if (response == null || response.cep() == null || response.cep().isBlank()) {
+                throw new RuntimeException("Invalid or non-existent CEP");
+            }
+
+            return response;
+        } catch (Exception e) {
+            log.error("Erro findAddressByZipCode: " + e.getMessage());
+            throw new RuntimeException("Error while trying to fetch address from ViaCEP: " + e.getMessage(), e);
+        }
+    }
+
 }
