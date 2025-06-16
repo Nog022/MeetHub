@@ -82,7 +82,7 @@ public class CompanyServiceImpl implements CompanyService {
                 companyRepository.save(company);
 
             }else{
-                logger.info("The email " + user.getEmail() + " is not valid");
+                logger.info("Not found company with email " + user.getEmail());
             }
 
         } catch (Exception e) {
