@@ -41,7 +41,7 @@ public class SecurityConfig  {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                        //.requestMatchers(HttpMethod.POST, "/contato/save").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/contato/save").hasRole("USER")
                         .anyRequest().permitAll()
 
                 )
