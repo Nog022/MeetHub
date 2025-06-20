@@ -46,9 +46,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @ManyToMany
-    @JoinTable(name = "USER_COMPANY", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "COMPANY_ID"))
-    private List<Company> companies;
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
 
     public User(String name, String email, String cpf, String password, UserRole role) {
         this.name = name;

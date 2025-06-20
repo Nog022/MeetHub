@@ -27,6 +27,7 @@ public class CompanyController {
     public CompanyDTO save(@RequestBody @Validated CompanyDTO companyDTO) {
         return companyService.save(companyDTO);
     }
+
     //TODO Fazer um DTO para sair todas as informações corretamente
     @GetMapping("/findUsersCompany/{cnpj}")
     @ResponseStatus(HttpStatus.CREATED)

@@ -36,7 +36,7 @@ public class Company {
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Local> locals;
 
-    @ManyToMany(mappedBy = "companies")
+    @OneToMany(mappedBy = "company")
     private List<User> users;
 
 }
