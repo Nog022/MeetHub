@@ -1,9 +1,7 @@
 package com.git.Nog022.MeetHub.controller;
 
 import com.git.Nog022.MeetHub.config.TokenService;
-import com.git.Nog022.MeetHub.dto.AuthorizationDTO;
-import com.git.Nog022.MeetHub.dto.LoginResponseDTO;
-import com.git.Nog022.MeetHub.dto.RegisterDTO;
+import com.git.Nog022.MeetHub.dto.*;
 import com.git.Nog022.MeetHub.entity.User;
 import com.git.Nog022.MeetHub.enums.UserRole;
 import com.git.Nog022.MeetHub.repository.UserRepository;
@@ -49,7 +47,7 @@ public class AuthorizationController {
     private CompanyService companyService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Validated AuthorizationDTO data) {
+    public ResponseEntity<?> login(@RequestBody @Validated AuthorizationDTO data) {
         try {
             logger.info("Iniciando login");
             logger.info("Dados recebidos: Email: {}, Senha: {}", data.email(), data.password());
@@ -63,7 +61,7 @@ public class AuthorizationController {
                 logger.warn("Login attempt with unverified email: {}", data.email());
                 return ResponseEntity
                         .status(HttpStatus.UNAUTHORIZED)
-                        .body(new LoginResponseDTO("Email not verified. Please check your inbox."));
+                        .body(new ErrorResponseDTO("Email not verified. Please check your inbox."));
             }
 
 
@@ -83,17 +81,36 @@ public class AuthorizationController {
             logger.info("Token JWT gerado com sucesso");
 
 
-            if(user.getCompanies().isEmpty()) {
+            if(user.getCompany() == null) {
                 companyService.joinCompanyWithDomain(user);
             }
+            logger.info("aqui!!!!!");
+            //logger.info("Usuario: {}", user.toString());
 
+            CompanyDTO companyDTO = null;
 
-            // Retornando a resposta com o token
-            return ResponseEntity.ok(new LoginResponseDTO(token));
+            if (user.getCompany() != null) {
+                companyDTO = new CompanyDTO(
+                        user.getCompany().getCnpj(),
+                        user.getCompany().getName(),
+                        user.getCompany().getDomains(),
+                        user.getEmail()
+                );
+            }
+
+            return ResponseEntity.ok(new LoginResponseDTO(
+                    token,
+                    user.getName(),
+                    user.getEmail(),
+                    user.getCpf(),
+                    user.getRole(),
+                    user.isEmailVerificado(),
+                    companyDTO
+            ));
         } catch (Exception e) {
             logger.error("Erro durante o login: {}", e.getMessage(), e);
             // Retornando erro com mensagem explicativa
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new LoginResponseDTO("Erro durante o login: " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDTO("Erro durante o login: " + e.getMessage()));
         }
     }
 

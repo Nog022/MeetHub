@@ -77,7 +77,7 @@ public class CompanyServiceImpl implements CompanyService {
                 logger.info("Empresa encontrada");
                 Company company = optionalCompany.get();
                 company.getUsers().add(user);
-                user.getCompanies().add(company);
+                user.setCompany(company);
                 userService.save(user);
                 companyRepository.save(company);
 
@@ -102,11 +102,11 @@ public class CompanyServiceImpl implements CompanyService {
             Optional<Company> optionalCompany = validateDomainService.validateDomain(email);
             logger.info("Company encontrada: "  + optionalCompany);
 
-            if (optionalCompany.isPresent() && user.getCompanies().isEmpty()) {
+            if (optionalCompany.isPresent() && user.getCompany() != null) {
                 logger.info("Empresa encontrada");
                 Company company = optionalCompany.get();
                 company.getUsers().add(user);
-                user.getCompanies().add(company);
+                user.setCompany(company);
                 userService.save(user);
                 companyRepository.save(company);
 
@@ -165,7 +165,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     private User setUserDTO(User user, Company company) {
         logger.info("entrou em setUserDTO");
-        user.getCompanies().add(company);
+        user.setCompany(company);
         user.setRole(UserRole.ADMIN);
         return user;
     }
