@@ -1,5 +1,6 @@
 package com.git.Nog022.MeetHub.service.impl;
 
+import com.git.Nog022.MeetHub.dto.RoomDTO;
 import com.git.Nog022.MeetHub.entity.Reservation;
 import com.git.Nog022.MeetHub.entity.Room;
 import com.git.Nog022.MeetHub.repository.RoomRepository;
@@ -43,6 +44,11 @@ public class RoomServiceImpl implements RoomService {
                 }
         ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not find"));
 
+    }
+
+    @Override
+    public List<RoomDTO> listRoomByCompany() {
+        return List.of();
     }
 
     @Override

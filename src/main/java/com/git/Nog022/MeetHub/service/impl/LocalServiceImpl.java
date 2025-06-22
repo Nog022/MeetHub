@@ -32,6 +32,7 @@ public class LocalServiceImpl implements LocalService {
     @Autowired
     private CompanyService companyService;
 
+
     public LocalServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -129,6 +130,26 @@ public class LocalServiceImpl implements LocalService {
             log.error("Erro findAddressByZipCode: " + e.getMessage());
             throw new RuntimeException("Error while trying to fetch address from ViaCEP: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public List<LocalDTO> listLocalByCompany(Long id) {
+        List<Local> listLocal = localRepository.findByCompanyId(id);
+
+        return listLocal.stream().map(local -> new LocalDTO(
+                local.getName(),
+                local.getCep(),
+                local.getAddress(),
+                local.getNeighborhood(),
+                local.getCity(),
+                local.getState(),
+                local.getNumber(),
+                local.getComplement(),
+                local.getCompany().getId()
+        )).toList();
+
+
+
     }
 
 }

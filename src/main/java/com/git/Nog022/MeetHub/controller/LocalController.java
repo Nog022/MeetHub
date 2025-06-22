@@ -1,6 +1,7 @@
 package com.git.Nog022.MeetHub.controller;
 
 import com.git.Nog022.MeetHub.dto.LocalDTO;
+import com.git.Nog022.MeetHub.dto.RoomDTO;
 import com.git.Nog022.MeetHub.dto.ViaCepResponseDTO;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.service.LocalService;
@@ -62,5 +63,9 @@ public class LocalController {
         return localService.findAddressByZipCode(cep);
     }
 
-    ;
+    @GetMapping("/listLocalByCompany/{id}")
+    //@Operation(summary = "List all rooms", description = "Returns a list of all registered rooms")
+    public List<LocalDTO> listLocalByCompany(@PathVariable Long id) {
+        return localService.listLocalByCompany(id);
+    }
 }

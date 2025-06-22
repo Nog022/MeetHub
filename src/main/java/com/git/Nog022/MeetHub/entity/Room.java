@@ -27,8 +27,11 @@ public class Room {
     @JoinColumn(name = "idPlace", referencedColumnName = "LOCATION_ID", nullable = false)
     private Local local;
 
-    @Column(name = "resources", length = 255)
-    private String resources;
+    @ElementCollection
+    @CollectionTable(name = "room_resources", joinColumns = @JoinColumn(name = "room_id"))
+    @Column(name = "resource")
+    private List<String> resources;
+
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference

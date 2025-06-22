@@ -15,4 +15,6 @@ public interface LocalRepository extends JpaRepository<Local, Integer> {
     List<Local> findByAddress(@NotEmpty String address);
 
     boolean findByCity(@NotEmpty String city);
+
+    List<Local> findByCompanyId(Long companyId);
 }
