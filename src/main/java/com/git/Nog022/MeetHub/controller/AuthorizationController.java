@@ -91,6 +91,7 @@ public class AuthorizationController {
 
             if (user.getCompany() != null) {
                 companyDTO = new CompanyDTO(
+                        user.getCompany().getId(),
                         user.getCompany().getCnpj(),
                         user.getCompany().getName(),
                         user.getCompany().getDomains(),

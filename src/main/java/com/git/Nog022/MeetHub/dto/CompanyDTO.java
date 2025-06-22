@@ -6,6 +6,7 @@ import com.git.Nog022.MeetHub.entity.User;
 import java.util.List;
 
 public record CompanyDTO(
+        Long id,
         String cnpj,
         String name,
         List<String> domain,

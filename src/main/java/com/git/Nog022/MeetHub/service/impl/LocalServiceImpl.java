@@ -1,14 +1,17 @@
 package com.git.Nog022.MeetHub.service.impl;
 
+import com.git.Nog022.MeetHub.dto.LocalDTO;
 import com.git.Nog022.MeetHub.dto.ViaCepResponseDTO;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.exception.ValidationException;
 import com.git.Nog022.MeetHub.repository.LocalRepository;
+import com.git.Nog022.MeetHub.service.CompanyService;
 import com.git.Nog022.MeetHub.service.LocalService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,17 +29,33 @@ public class LocalServiceImpl implements LocalService {
 
     private final RestTemplate restTemplate;
 
+    @Autowired
+    private CompanyService companyService;
+
     public LocalServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
 
     @Override
-    public Local save(Local local) {
-        if(verifyLocalExist(local.getAddress(), local.getCity(), local.getState())) {
+    public ResponseEntity<LocalDTO> save(LocalDTO dto) {
+        log.info("Saving local {}", dto);
+        if(verifyLocalExist(dto.address(), dto.city(), dto.state())) {
             throw new ValidationException("Address, City and State are not valid");
         }
-        return localRepository.save(local);
+        Local local = new Local();
+        local.setName(dto.name());
+        local.setCep(dto.cep());
+        local.setAddress(dto.address());
+        local.setNeighborhood(dto.neighborhood());
+        local.setCity(dto.city());
+        local.setState(dto.state());
+        local.setNumber(dto.number());
+        local.setComplement(dto.complement());
+
+        local.setCompany(companyService.findById(dto.companyId()));
+        localRepository.save(local);
+        return ResponseEntity.ok(dto);
     }
 
     @Override
@@ -50,7 +69,7 @@ public class LocalServiceImpl implements LocalService {
 
     @Override
     public void update(Local local) {
-        localRepository.findById(local.getId()).map(
+        localRepository.findById(Math.toIntExact(local.getId())).map(
                 localFind -> {
                     local.setId(localFind.getId());
                     localRepository.save(local);

@@ -1,5 +1,6 @@
 package com.git.Nog022.MeetHub.controller;
 
+import com.git.Nog022.MeetHub.dto.LocalDTO;
 import com.git.Nog022.MeetHub.dto.ViaCepResponseDTO;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.service.LocalService;
@@ -7,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +25,7 @@ public class LocalController {
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new local", description = "Creates a new local entry in the system")
-    public Local save(@RequestBody @Validated Local local) {
+    public ResponseEntity<LocalDTO> save(@RequestBody @Validated LocalDTO local) {
         return localService.save(local);
     }
 
