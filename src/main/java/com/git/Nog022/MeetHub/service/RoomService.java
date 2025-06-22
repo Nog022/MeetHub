@@ -17,4 +17,6 @@ public interface RoomService {
     void update(Integer id, Room room);
 
     List<Room> listRoom();
+
+    Room roomById(Integer id);
 }
