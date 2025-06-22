@@ -16,13 +16,13 @@ public interface LocalService {
 
     ResponseEntity<LocalDTO> save(LocalDTO local);
 
-    void delete(Integer id);
+    void delete(Long id);
 
     void update(Local local);
 
     List<Local> listLocal   ();
 
-    Local localById(Integer id);
+    Local localById(Long id);
 
     boolean verifyAddressAndCityAndState(String address, String city, String state);
 

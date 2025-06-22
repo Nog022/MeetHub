@@ -24,7 +24,7 @@ public class RoomController {
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new room", description = "Creates a new room entry in the system")
-    public Room save(@RequestBody @Validated Room room) {
+    public RoomDTO save(@RequestBody @Validated RoomDTO room) {
         return roomService.save(room);
     }
 
@@ -37,20 +37,20 @@ public class RoomController {
     @PutMapping("/update/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Update room details", description = "Updates the details of an existing room by its ID")
-    public void update(@PathVariable Integer id, @RequestBody @Validated Room room) {
+    public void update(@PathVariable Long id, @RequestBody @Validated Room room) {
         roomService.update(id, room);
     }
 
     @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete a room", description = "Deletes a room by its ID")
-    public void delete(@PathVariable Integer id) {
+    public void delete(@PathVariable Long id) {
         roomService.delete(id);
     }
 
-//    @GetMapping("/listRoomByCompany/{id}")
-//    //@Operation(summary = "List all rooms", description = "Returns a list of all registered rooms")
-//    public List<RoomDTO> listRoomByCompany() {
-//        return roomService.listRoomByCompany();
-//    }
+    @GetMapping("/listRoomByLocal/{id}")
+    //@Operation(summary = "List all rooms", description = "Returns a list of all registered rooms")
+    public List<RoomDTO> listRoomByLocal(@PathVariable Long id) {
+        return roomService.listRoomByLocal(id);
+    }
 }

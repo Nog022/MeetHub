@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -15,7 +16,7 @@ public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ROOM_ID")
-    private Integer id;
+    private Long id;
     @Column(name = "name_room", length = 255)
     @NotEmpty(message = "{field.required}")
     private String name;
@@ -30,7 +31,7 @@ public class Room {
     @ElementCollection
     @CollectionTable(name = "room_resources", joinColumns = @JoinColumn(name = "room_id"))
     @Column(name = "resource")
-    private List<String> resources;
+    private List<String> resources = new ArrayList<>();
 
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)

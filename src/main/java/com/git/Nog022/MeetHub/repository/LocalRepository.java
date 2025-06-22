@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface LocalRepository extends JpaRepository<Local, Integer> {
+public interface LocalRepository extends JpaRepository<Local, Long> {
     Optional<Local> findByAddressAndCityAndState(String address, String city, String state);
 
     List<Local> findByAddress(@NotEmpty String address);
@@ -17,4 +17,6 @@ public interface LocalRepository extends JpaRepository<Local, Integer> {
     boolean findByCity(@NotEmpty String city);
 
     List<Local> findByCompanyId(Long companyId);
+
+    List<Local> id(Long id);
 }

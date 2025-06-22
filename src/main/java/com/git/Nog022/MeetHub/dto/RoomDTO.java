@@ -5,7 +5,7 @@ import java.util.List;
 public record RoomDTO(
         String name,
         Integer capacity,
-        Integer localId,
+        Long localId,
         List<String> resources
 ) {
 }

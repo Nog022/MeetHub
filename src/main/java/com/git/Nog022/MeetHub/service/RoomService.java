@@ -11,15 +11,15 @@ import java.util.List;
 @Service
 public interface RoomService {
 
-    Room save(Room room);
+    RoomDTO save(RoomDTO room);
 
-    void delete(Integer id);
+    void delete(Long id);
 
-    void update(Integer id, Room room);
+    void update(Long id, Room room);
 
     List<Room> listRoom();
 
-    List<RoomDTO> listRoomByCompany();
+    List<RoomDTO> listRoomByLocal(Long id);
 
-    Room roomById(Integer id);
+    Room roomById(Long id);
 }

@@ -39,13 +39,13 @@ public class LocalController {
     @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete a local", description = "Deletes the local by its ID")
-    public void delete(@PathVariable Integer id) {
+    public void delete(@PathVariable Long id) {
         localService.delete(id);
     }
 
     @GetMapping("/localById/{id}")
     @Operation(summary = "Get a local by ID", description = "Returns the details of a local by its ID")
-    public Local localById(@PathVariable Integer id) {
+    public Local localById(@PathVariable Long id) {
         return localService.localById(id);
     }
 

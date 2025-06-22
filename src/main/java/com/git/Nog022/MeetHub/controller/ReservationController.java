@@ -24,14 +24,14 @@ public class ReservationController {
 
     @Autowired
     private ReservationService reservationService;
-
-    @PostMapping("/save")
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create a new reservation", description = "Creates a new reservation entry in the system")
-    public Reservation save(@RequestBody Reservation reservation) {
-        logger.info("Entered the save controller");
-        return reservationService.save(reservation);
-    }
+//
+//    @PostMapping("/save")
+//    @ResponseStatus(HttpStatus.CREATED)
+//    @Operation(summary = "Create a new reservation", description = "Creates a new reservation entry in the system")
+//    public Reservation save(@RequestBody Reservation reservation) {
+//        logger.info("Entered the save controller");
+//        return reservationService.save(reservation);
+//    }
 
     @GetMapping("/reservationById/{id}")
     @Operation(summary = "Get reservation by ID", description = "Returns the details of a reservation by its ID")

@@ -4,6 +4,7 @@ import com.git.Nog022.MeetHub.enums.RoomBlockType;
 import com.git.Nog022.MeetHub.enums.RoomLocationType;
 
 public record LocalDTO(
+        Long id,
         String name,
         String cep,
         String address,
