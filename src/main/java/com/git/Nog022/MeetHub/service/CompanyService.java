@@ -24,4 +24,6 @@ public interface CompanyService {
 
     void joinCompanyWithDomain(String email);
 
+    Company findById(Long id);
+
 }

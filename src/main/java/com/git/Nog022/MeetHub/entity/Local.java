@@ -13,7 +13,7 @@ public class Local {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "LOCATION_ID")
-    private Integer id;
+    private Long id;
 
     @Column(name = "CEP", length = 10)
     private String cep;
@@ -40,6 +40,10 @@ public class Local {
     @Column(name = "STATE", length = 100)
     @NotEmpty
     private String state;
+
+    @Column(name = "COMPLEMENT")
+    @NotEmpty
+    private String complement;
 
     @ManyToOne
     @JoinColumn(name = "COMPANY_ID")

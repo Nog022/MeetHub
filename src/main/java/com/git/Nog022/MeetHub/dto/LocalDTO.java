@@ -5,10 +5,13 @@ import com.git.Nog022.MeetHub.enums.RoomLocationType;
 
 public record LocalDTO(
         String name,
+        String cep,
         String address,
+        String neighborhood,
         String city,
         String state,
-        RoomLocationType roomLocationType,
-        RoomBlockType roomBlockType
+        String number,
+        String complement,
+        Long companyId
 ) {
 }
