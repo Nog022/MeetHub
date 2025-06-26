@@ -6,6 +6,7 @@ import com.git.Nog022.MeetHub.entity.Local;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -15,15 +16,17 @@ public interface LocalService {
 
     ResponseEntity<LocalDTO> save(LocalDTO local);
 
-    void delete(Integer id);
+    void delete(Long id);
 
     void update(Local local);
 
     List<Local> listLocal   ();
 
-    Local localById(Integer id);
+    Local localById(Long id);
 
     boolean verifyAddressAndCityAndState(String address, String city, String state);
 
     ViaCepResponseDTO findAddressByZipCode(String cep);
+
+    List<LocalDTO> listLocalByCompany(Long id);
 }

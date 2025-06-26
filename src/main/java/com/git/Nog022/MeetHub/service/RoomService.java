@@ -1,5 +1,6 @@
 package com.git.Nog022.MeetHub.service;
 
+import com.git.Nog022.MeetHub.dto.RoomDTO;
 import com.git.Nog022.MeetHub.entity.Room;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -10,13 +11,15 @@ import java.util.List;
 @Service
 public interface RoomService {
 
-    Room save(Room room);
+    RoomDTO save(RoomDTO room);
 
-    void delete(Integer id);
+    void delete(Long id);
 
-    void update(Integer id, Room room);
+    void update(Long id, Room room);
 
     List<Room> listRoom();
 
-    Room roomById(Integer id);
+    List<RoomDTO> listRoomByLocal(Long id);
+
+    Room roomById(Long id);
 }

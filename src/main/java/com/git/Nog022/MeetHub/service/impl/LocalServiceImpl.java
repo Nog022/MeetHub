@@ -32,6 +32,7 @@ public class LocalServiceImpl implements LocalService {
     @Autowired
     private CompanyService companyService;
 
+
     public LocalServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -59,7 +60,7 @@ public class LocalServiceImpl implements LocalService {
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(Long id) {
         localRepository.findById(id).map(localId -> {
             localRepository.delete(localId);
             return localId;
@@ -69,7 +70,7 @@ public class LocalServiceImpl implements LocalService {
 
     @Override
     public void update(Local local) {
-        localRepository.findById(Math.toIntExact(local.getId())).map(
+        localRepository.findById((long) Math.toIntExact(local.getId())).map(
                 localFind -> {
                     local.setId(localFind.getId());
                     localRepository.save(local);
@@ -86,7 +87,7 @@ public class LocalServiceImpl implements LocalService {
     }
 
     @Override
-    public Local localById(Integer id) {
+    public Local localById(Long id) {
         return localRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
 
     }
@@ -129,6 +130,27 @@ public class LocalServiceImpl implements LocalService {
             log.error("Erro findAddressByZipCode: " + e.getMessage());
             throw new RuntimeException("Error while trying to fetch address from ViaCEP: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public List<LocalDTO> listLocalByCompany(Long id) {
+        List<Local> listLocal = localRepository.findByCompanyId(id);
+
+        return listLocal.stream().map(local -> new LocalDTO(
+                local.getId(),
+                local.getName(),
+                local.getCep(),
+                local.getAddress(),
+                local.getNeighborhood(),
+                local.getCity(),
+                local.getState(),
+                local.getNumber(),
+                local.getComplement(),
+                local.getCompany().getId()
+        )).toList();
+
+
+
     }
 
 }
