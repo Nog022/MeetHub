@@ -35,28 +35,28 @@ public class ReservationServiceImpl implements ReservationService {
     @Autowired
     private ReservationRepository reservationRepository;
 
-//    @Override
-//    public Reservation save(Reservation reservation) {
-//        logger.info("Service Reservation Save");
-//
-//
-//        if(roomRepository != null && roomService != null && reservationRepository != null ) {
-//            logger.info("Nenhum repository ou service null");
-//            if (checkReservation(reservation) ) {
-//                Room room = roomService.roomById(reservation.getRoom().getId());
-//                room.getReservations().add(reservation);
-//                reservation = reservationRepository.save(reservation);
-//                room.setLastReservationId(reservation.getId());
-//                roomService.save(room);
-//
-//                return reservation;
-//            }
-//        }
-//
-//
-//        throw new ReservationConflictException("Unable to make reservation: schedule conflict.");
-//
-//    }
+    @Override
+    public Reservation save(Reservation reservation) {
+        logger.info("Service Reservation Save");
+
+
+        if(roomRepository != null && roomService != null && reservationRepository != null ) {
+            logger.info("Nenhum repository ou service null");
+            if (checkReservation(reservation) ) {
+                Room room = roomService.roomById(reservation.getRoom().getId());
+                room.getReservations().add(reservation);
+                reservation = reservationRepository.save(reservation);
+                room.setLastReservationId(reservation.getId());
+                roomService.save(room);
+
+                return reservation;
+            }
+        }
+
+
+        throw new ReservationConflictException("Unable to make reservation: schedule conflict.");
+
+    }
 
     @Override
     public void delete(Integer id) {

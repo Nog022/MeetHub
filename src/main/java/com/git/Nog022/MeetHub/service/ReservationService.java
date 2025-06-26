@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public interface ReservationService {
 
-//    Reservation save(Reservation reservation);
+    Reservation save(Reservation reservation);
 
     void delete(Integer id);
 

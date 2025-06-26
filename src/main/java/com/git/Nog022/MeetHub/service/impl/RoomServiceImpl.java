@@ -51,6 +51,7 @@ public class RoomServiceImpl implements RoomService {
 
 
         return new RoomDTO(
+                room.getId(),
                 room.getName(),
                 room.getCapacity(),
                 room.getLocal().getId(),
@@ -85,6 +86,7 @@ public class RoomServiceImpl implements RoomService {
         List<RoomDTO> dtos = new ArrayList<>();
         for (Room room : rooms) {
             RoomDTO dto = new RoomDTO(
+                    room.getId(),
                     room.getName(),
                     room.getCapacity(),
                     room.getLocal().getId(),
