@@ -1,6 +1,7 @@
 package com.git.Nog022.MeetHub.service.impl;
 
 import com.git.Nog022.MeetHub.controller.ReservationController;
+import com.git.Nog022.MeetHub.dto.ReservationDTO;
 import com.git.Nog022.MeetHub.entity.Reservation;
 import com.git.Nog022.MeetHub.entity.Room;
 import com.git.Nog022.MeetHub.exception.ReservationConflictException;
@@ -36,20 +37,28 @@ public class ReservationServiceImpl implements ReservationService {
     private ReservationRepository reservationRepository;
 
     @Override
-    public Reservation save(Reservation reservation) {
+    public ReservationDTO save(ReservationDTO dto) {
         logger.info("Service Reservation Save");
-
+        logger.info("dto: {}", dto);
 
         if(roomRepository != null && roomService != null && reservationRepository != null ) {
-            logger.info("Nenhum repository ou service null");
-            if (checkReservation(reservation) ) {
-                Room room = roomService.roomById(reservation.getRoom().getId());
-                room.getReservations().add(reservation);
-                reservation = reservationRepository.save(reservation);
-                room.setLastReservationId(reservation.getId());
-                roomService.save(room);
+            if (checkReservation(dto) ) {
+                Room room = roomService.roomById(dto.roomId());
+                Reservation reservation = new Reservation();
+                reservation.setPersonName(dto.personName());
+                reservation.setRoom(room);
+                reservation.setDate(dto.date());
+                reservation.setStartTime(dto.startTime());
+                reservation.setEndTime(dto.endTime());
+                reservation.setEventDescription(dto.eventDescription());
 
-                return reservation;
+                reservationRepository.save(reservation);
+
+                room.getReservations().add(reservation);
+                room.setLastReservationId(reservation.getId());
+                roomRepository.save(room);
+
+                return dto;
             }
         }
 
@@ -90,16 +99,16 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
 
-    private boolean checkReservation(Reservation reservation) {
-       return roomRepository.findById(reservation.getRoom().getId()).map(
+    private boolean checkReservation(ReservationDTO reservation) {
+       return roomRepository.findById(reservation.roomId()).map(
                 room -> {
                     if(room.getReservations().isEmpty()){
                         return true;
                     }
                     for (Reservation existingReservation : room.getReservations()) {
-                        if(existingReservation.getDate().equals(reservation.getDate())){
-                            if(!(existingReservation.getEndTime().isBefore(reservation.getStartTime()) ||
-                                    reservation.getStartTime().isAfter(existingReservation.getEndTime())) ){
+                        if(existingReservation.getDate().equals(reservation.date())){
+                            if(!(existingReservation.getEndTime().isBefore(reservation.startTime()) ||
+                                    reservation.startTime().isAfter(existingReservation.getEndTime())) ){
                                 return false;
                             }
                         }

@@ -17,8 +17,7 @@ public class Reservation {
     private Integer id;
     @Column(name = "person_name", length = 255)
     private String personName;
-    @Column(name = "chosen_room", length = 255)
-    private String chosenRoom;
+
     @Column(name = "date_time")
     private LocalDateTime date;
 
