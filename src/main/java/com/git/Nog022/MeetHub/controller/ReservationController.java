@@ -1,5 +1,6 @@
 package com.git.Nog022.MeetHub.controller;
 
+import com.git.Nog022.MeetHub.dto.ReservationDTO;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.entity.Reservation;
 import com.git.Nog022.MeetHub.service.ReservationService;
@@ -28,7 +29,7 @@ public class ReservationController {
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new reservation", description = "Creates a new reservation entry in the system")
-    public Reservation save(@RequestBody Reservation reservation) {
+    public ReservationDTO save(@RequestBody ReservationDTO reservation) {
         logger.info("Entered the save controller");
         return reservationService.save(reservation);
     }

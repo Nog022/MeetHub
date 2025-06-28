@@ -1,5 +1,6 @@
 package com.git.Nog022.MeetHub.service;
 
+import com.git.Nog022.MeetHub.dto.ReservationDTO;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.entity.Reservation;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import java.util.List;
 @Service
 public interface ReservationService {
 
-    Reservation save(Reservation reservation);
+    ReservationDTO save(ReservationDTO reservation);
 
     void delete(Integer id);
 
