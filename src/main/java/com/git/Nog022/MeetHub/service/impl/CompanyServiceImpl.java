@@ -46,7 +46,7 @@ public class CompanyServiceImpl implements CompanyService {
 
 
     @Override
-    public CompanyDTO save(CompanyDTO companyDTO) {
+    public CompanyResponseDTO save(CompanyDTO companyDTO) {
         logger.info("entrou em salvar company");
         User user = userService.findByEmail(companyDTO.userEmail());
 
@@ -55,15 +55,17 @@ public class CompanyServiceImpl implements CompanyService {
             logger.info("entrou no if");
 
             Company company = new Company();
+
             company.setCnpj(companyDTO.cnpj());
             company.setName(companyDTO.name());
             company.setLocals(null);
             company.setUsers(new ArrayList<>());
             company.getUsers().add(setUserDTO(user, company));
             company.setDomains(companyDTO.domain() == null ? Collections.emptyList() : new ArrayList<>(companyDTO.domain()));
-            companyRepository.save(company);
+
+            Company savedCompany = companyRepository.save(company);
             userService.save(user);
-            return companyDTO;
+            return toResponseDTO(savedCompany);
 
         }
 
@@ -178,6 +180,15 @@ public class CompanyServiceImpl implements CompanyService {
         user.setCompany(company);
         user.setRole(UserRole.ADMIN);
         return user;
+    }
+
+    private CompanyResponseDTO toResponseDTO(Company company) {
+        return new CompanyResponseDTO(
+                company.getId(),
+                company.getName(),
+                company.getCnpj(),
+                company.getDomains()
+        );
     }
 
 

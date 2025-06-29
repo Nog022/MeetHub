@@ -1,12 +1,14 @@
 package com.git.Nog022.MeetHub.service.impl;
 
 import com.git.Nog022.MeetHub.controller.ReservationController;
-import com.git.Nog022.MeetHub.dto.ReservationDTO;
+import com.git.Nog022.MeetHub.dto.*;
+import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.entity.Reservation;
 import com.git.Nog022.MeetHub.entity.Room;
 import com.git.Nog022.MeetHub.exception.ReservationConflictException;
 import com.git.Nog022.MeetHub.repository.ReservationRepository;
 import com.git.Nog022.MeetHub.repository.RoomRepository;
+import com.git.Nog022.MeetHub.service.CompanyService;
 import com.git.Nog022.MeetHub.service.ReservationService;
 import com.git.Nog022.MeetHub.service.RoomService;
 import com.git.Nog022.MeetHub.utils.LastElement;
@@ -18,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,10 +39,15 @@ public class ReservationServiceImpl implements ReservationService {
     @Autowired
     private ReservationRepository reservationRepository;
 
+    @Autowired
+    private CompanyService companyService;
+
+
+
     @Override
     public ReservationDTO save(ReservationDTO dto) {
         logger.info("Service Reservation Save");
-        logger.info("dto: {}", dto);
+        logger.info("dto reservation: {}", dto);
 
         if(roomRepository != null && roomService != null && reservationRepository != null ) {
             if (checkReservation(dto) ) {
@@ -51,6 +59,7 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.setStartTime(dto.startTime());
                 reservation.setEndTime(dto.endTime());
                 reservation.setEventDescription(dto.eventDescription());
+                reservation.setCompany(companyService.findById(dto.companyId()));
 
                 reservationRepository.save(reservation);
 
@@ -92,6 +101,57 @@ public class ReservationServiceImpl implements ReservationService {
     public List<Reservation> listReservations() {
         return reservationRepository.findAll();
     }
+
+    @Override
+    public List<ListReservarionDTO> listReservationsByCompany(Long id) {
+        List<Reservation> listReservation =  reservationRepository.findByCompanyId(id);
+        List<ListReservarionDTO> listReservarionDTO = new ArrayList<>();
+        for (Reservation reservation : listReservation) {
+            RoomReportDTO roomReportDTO = toResponseRoomReportDTO(reservation.getRoom());
+
+            ListReservarionDTO listReservario = new ListReservarionDTO(
+                    reservation.getId(),
+                    reservation.getPersonName(),
+                    roomReportDTO,
+                    reservation.getDate(),
+                    reservation.getStartTime(),
+                    reservation.getEndTime(),
+                    reservation.getEventDescription()
+            );
+            listReservarionDTO.add(listReservario);
+
+        }
+
+        return listReservarionDTO;
+    }
+
+    private RoomReportDTO toResponseRoomReportDTO(Room room) {
+        return new RoomReportDTO(
+                room.getId(),
+                room.getName(),
+                room.getCapacity(),
+                toResponseLocalDTO(room.getLocal()),
+                room.getResources()
+        );
+    }
+
+
+    private LocalDTO toResponseLocalDTO(Local local) {
+        return new LocalDTO(
+                local.getId(),
+                local.getName(),
+                local.getCep(),
+                local.getAddress(),
+                local.getNeighborhood(),
+                local.getCity(),
+                local.getState(),
+                local.getNumber(),
+                local.getComplement(),
+                local.getCompany().getId()
+        );
+    }
+
+
 
     @Override
     public Reservation reservationById(Integer id) {

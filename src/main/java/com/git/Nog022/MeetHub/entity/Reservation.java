@@ -2,6 +2,7 @@ package com.git.Nog022.MeetHub.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -32,4 +33,9 @@ public class Reservation {
     private LocalTime endTime;
     @Column(name = "event_description", length = 255)
     private String eventDescription;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
 }
