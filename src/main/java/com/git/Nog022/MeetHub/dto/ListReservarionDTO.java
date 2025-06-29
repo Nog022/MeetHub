@@ -3,13 +3,13 @@ package com.git.Nog022.MeetHub.dto;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-public record ReservationDTO(
+public record ListReservarionDTO(
+        Integer id,
         String personName,
-        Long roomId,
+        RoomReportDTO roomReportDTO,
         LocalDateTime date,
         LocalTime startTime,
         LocalTime endTime,
-        String eventDescription,
-        Long companyId
+        String eventDescription
 ) {
 }

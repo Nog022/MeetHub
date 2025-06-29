@@ -97,6 +97,8 @@ public class AuthorizationController {
                         user.getCompany().getDomains(),
                         user.getEmail()
                 );
+
+                logger.info("companyDTO: {}", companyDTO);
             }
 
             return ResponseEntity.ok(new LoginResponseDTO(

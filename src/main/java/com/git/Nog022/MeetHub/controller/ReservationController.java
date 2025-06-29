@@ -1,5 +1,6 @@
 package com.git.Nog022.MeetHub.controller;
 
+import com.git.Nog022.MeetHub.dto.ListReservarionDTO;
 import com.git.Nog022.MeetHub.dto.ReservationDTO;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.entity.Reservation;
@@ -58,6 +59,12 @@ public class ReservationController {
     @Operation(summary = "List all reservations", description = "Returns a list of all registered reservations")
     public List<Reservation> listReservations() {
         return reservationService.listReservations();
+    }
+
+    @GetMapping("/listReservationsByCompany/{id}")
+    @Operation(summary = "List all reservations by company id", description = "Returns a list of all registered reservations")
+    public List<ListReservarionDTO> listReservationsByRoom(@PathVariable Long id) {
+        return reservationService.listReservationsByCompany(id);
     }
 
 

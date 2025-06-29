@@ -1,5 +1,6 @@
 package com.git.Nog022.MeetHub.service;
 
+import com.git.Nog022.MeetHub.dto.ListReservarionDTO;
 import com.git.Nog022.MeetHub.dto.ReservationDTO;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.entity.Reservation;
@@ -19,6 +20,8 @@ public interface ReservationService {
     void update(Reservation reservation);
 
     List<Reservation> listReservations();
+
+    List<ListReservarionDTO> listReservationsByCompany(Long id);
 
     Reservation reservationById(Integer id);
 }
