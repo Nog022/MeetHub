@@ -22,7 +22,7 @@ public class Company {
     @NotEmpty
     private String name;
 
-    @Column(name = "cnpj", length = 14)
+    @Column(name = "cnpj", length = 14, nullable = false, updatable = false)
     @NotNull
     @NotEmpty
     @CNPJ(message = "invalid cnpj")

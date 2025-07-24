@@ -160,21 +160,35 @@ public class ReservationServiceImpl implements ReservationService {
 
 
     private boolean checkReservation(ReservationDTO reservation) {
-       return roomRepository.findById(reservation.roomId()).map(
-                room -> {
-                    if(room.getReservations().isEmpty()){
-                        return true;
-                    }
-                    for (Reservation existingReservation : room.getReservations()) {
-                        if(existingReservation.getDate().equals(reservation.date())){
-                            if(!(existingReservation.getEndTime().isBefore(reservation.startTime()) ||
-                                    reservation.startTime().isAfter(existingReservation.getEndTime())) ){
-                                return false;
-                            }
-                        }
-                    }
-                    return true;
-                }).orElse(false);
+        return roomRepository.findById(reservation.roomId()).map(room -> {
+            if (room.getReservations().isEmpty()) {
+                return true;
+            }
+            
+            for (Reservation existingReservation : room.getReservations()) {
+                if (existingReservation.getDate().equals(reservation.date())) {
 
+                    boolean semConflito = !reservation.endTime().isAfter(existingReservation.getStartTime()) ||
+                            !reservation.startTime().isBefore(existingReservation.getEndTime());
+
+                    if (!semConflito) {
+                        logger.warn("Conflict found with existing reservation!");
+                        return false;
+                    } else {
+                        logger.info("without conflict with this reservation.");
+                    }
+
+                } else {
+                    logger.info("Different dates - no conflict.");
+                }
+            }
+
+            logger.info("No conflicts found - reservation allowed.");
+            return true;
+        }).orElseGet(() -> {
+            logger.warn("Room with ID {} not found!", reservation.roomId());
+            return false;
+        });
     }
+
 }

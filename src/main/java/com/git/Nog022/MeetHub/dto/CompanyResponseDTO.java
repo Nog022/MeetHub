@@ -8,7 +8,8 @@ public record CompanyResponseDTO(
         Long id,
         String cnpj,
         String name,
-        List<String> domain
+        List<String> domain,
+        String token
 
 ) {
 }

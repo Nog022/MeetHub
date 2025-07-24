@@ -24,17 +24,21 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
 
-    public String generateToken(User usuario){
+    public String generateToken(User user){
         logger.info("Generating token");
         try{
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            logger.info("passou3");
+
             String token = JWT.create()
                     .withIssuer("auth-api")
-                    .withSubject(usuario.getName())
+                    .withSubject(user.getEmail())
+                    .withClaim("role", user.getRole().name())
+                    .withClaim("cnpj", user.getCompany().getCnpj())
                     .withExpiresAt(genExpirationDate())
                     .sign(algorithm);
-            logger.info("passou4");
+
+
+
             return token;
         } catch (JWTCreationException exception) {
             throw new RuntimeException("Error while generating token", exception);

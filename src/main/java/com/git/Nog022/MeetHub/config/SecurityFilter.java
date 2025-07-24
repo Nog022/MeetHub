@@ -39,7 +39,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             logger.info("2");
             var login = tokenService.validateToken(token);
             UserDetails user = usuarioRepository.findByEmail(login)
-                    .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com CPF: " + login));
+                    .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com Email: " + login));
 
 
             var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());

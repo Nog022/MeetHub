@@ -1,6 +1,7 @@
 package com.git.Nog022.MeetHub.service.impl;
 
 import com.git.Nog022.MeetHub.config.SecurityConfig;
+import com.git.Nog022.MeetHub.config.TokenService;
 import com.git.Nog022.MeetHub.dto.*;
 import com.git.Nog022.MeetHub.entity.Company;
 import com.git.Nog022.MeetHub.entity.Local;
@@ -43,7 +44,8 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Autowired
     private ValidateDomainService validateDomainService;
-
+    @Autowired
+    private TokenService tokenService;
 
     @Override
     public CompanyResponseDTO save(CompanyDTO companyDTO) {
@@ -65,7 +67,7 @@ public class CompanyServiceImpl implements CompanyService {
 
             Company savedCompany = companyRepository.save(company);
             userService.save(user);
-            return toResponseDTO(savedCompany);
+            return toResponseDTO(savedCompany, user);
 
         }
 
@@ -182,12 +184,14 @@ public class CompanyServiceImpl implements CompanyService {
         return user;
     }
 
-    private CompanyResponseDTO toResponseDTO(Company company) {
+    private CompanyResponseDTO toResponseDTO(Company company, User user) {
+
         return new CompanyResponseDTO(
                 company.getId(),
-                company.getName(),
                 company.getCnpj(),
-                company.getDomains()
+                company.getName(),
+                company.getDomains(),
+                tokenService.generateToken(user)
         );
     }
 
