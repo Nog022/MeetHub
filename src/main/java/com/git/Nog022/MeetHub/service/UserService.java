@@ -20,4 +20,6 @@ public interface UserService {
     boolean findByCpf(String cpf);
 
     User findByEmail(String email);
+
+    User findById(Long id);
 }

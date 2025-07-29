@@ -13,13 +13,13 @@ import java.time.LocalTime;
 public class Reservation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "RESERVATION_ID")
     private Integer id;
-    @Column(name = "person_name", length = 255)
+    @Column(name = "PERSON_NAME", length = 255)
     private String personName;
 
-    @Column(name = "date_time")
+    @Column(name = "DATE_TIME")
     private LocalDateTime date;
 
     @ManyToOne
@@ -27,15 +27,21 @@ public class Reservation {
     @JsonBackReference
     private Room room;
 
-    @Column(name = "start_time")
+    @Column(name = "START_TIME")
     private LocalTime startTime;
-    @Column(name = "end_time")
+    @Column(name = "END_TIME")
     private LocalTime endTime;
-    @Column(name = "event_description", length = 255)
+    @Column(name = "EVENT_DESCRIPTION", length = 255)
     private String eventDescription;
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
+    @JoinColumn(name = "INSTITUTION_ID")
+    private Institution institution;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
 }

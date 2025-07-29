@@ -5,13 +5,15 @@ import com.git.Nog022.MeetHub.dto.*;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.entity.Reservation;
 import com.git.Nog022.MeetHub.entity.Room;
+import com.git.Nog022.MeetHub.entity.User;
 import com.git.Nog022.MeetHub.exception.ReservationConflictException;
 import com.git.Nog022.MeetHub.repository.ReservationRepository;
 import com.git.Nog022.MeetHub.repository.RoomRepository;
-import com.git.Nog022.MeetHub.service.CompanyService;
+
+import com.git.Nog022.MeetHub.service.InstitutionService;
 import com.git.Nog022.MeetHub.service.ReservationService;
 import com.git.Nog022.MeetHub.service.RoomService;
-import com.git.Nog022.MeetHub.utils.LastElement;
+import com.git.Nog022.MeetHub.service.UserService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,12 +42,15 @@ public class ReservationServiceImpl implements ReservationService {
     private ReservationRepository reservationRepository;
 
     @Autowired
-    private CompanyService companyService;
+    private InstitutionService institutionService;
+
+    @Autowired
+    private UserService userService;
 
 
 
     @Override
-    public ReservationDTO save(ReservationDTO dto) {
+    public ReservationDTO save(ReservationDTO dto, Long userId) {
         logger.info("Service Reservation Save");
         logger.info("dto reservation: {}", dto);
 
@@ -59,8 +64,8 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.setStartTime(dto.startTime());
                 reservation.setEndTime(dto.endTime());
                 reservation.setEventDescription(dto.eventDescription());
-                reservation.setCompany(companyService.findById(dto.companyId()));
-
+                reservation.setInstitution(institutionService.findById(dto.institutionId()));
+                reservation.setUser(userService.findById(userId));
                 reservationRepository.save(reservation);
 
                 room.getReservations().add(reservation);
@@ -77,11 +82,19 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void delete(Integer id) {
-        reservationRepository.findById(id).map(reservationId -> {
-            reservationRepository.delete(reservationId);
-            return reservationId;
-        }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
+    public void delete(Long userId, Integer id, String role) {
+
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not foud reservation"));
+
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(role);
+
+        if (isAdmin || reservation.getUser().getId().equals(userId)) {
+            reservationRepository.delete(reservation);
+        } else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not permitted to delete reservation");
+        }
+
 
     }
 
@@ -103,11 +116,12 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<ListReservarionDTO> listReservationsByCompany(Long id) {
-        List<Reservation> listReservation =  reservationRepository.findByCompanyId(id);
+    public List<ListReservarionDTO> listReservationsByInstitution(Long id) {
+        List<Reservation> listReservation =  reservationRepository.findByInstitutionId(id);
         List<ListReservarionDTO> listReservarionDTO = new ArrayList<>();
         for (Reservation reservation : listReservation) {
             RoomReportDTO roomReportDTO = toResponseRoomReportDTO(reservation.getRoom());
+            UserDTO userDTO = toResponseUserDTO(reservation.getUser());
 
             ListReservarionDTO listReservario = new ListReservarionDTO(
                     reservation.getId(),
@@ -116,7 +130,8 @@ public class ReservationServiceImpl implements ReservationService {
                     reservation.getDate(),
                     reservation.getStartTime(),
                     reservation.getEndTime(),
-                    reservation.getEventDescription()
+                    reservation.getEventDescription(),
+                    userDTO
             );
             listReservarionDTO.add(listReservario);
 
@@ -147,7 +162,17 @@ public class ReservationServiceImpl implements ReservationService {
                 local.getState(),
                 local.getNumber(),
                 local.getComplement(),
-                local.getCompany().getId()
+                local.getInstitution().getId()
+        );
+    }
+
+    private UserDTO toResponseUserDTO(User user) {
+        return new UserDTO(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getCpf(),
+                user.getRole()
         );
     }
 

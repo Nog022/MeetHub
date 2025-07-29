@@ -50,10 +50,10 @@ public class SecurityConfig  {
                         .requestMatchers(HttpMethod.PUT, "/api/users/update/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/users/listAll").hasRole("ADMIN")
 
-                        //company
-                        .requestMatchers(HttpMethod.POST, "/company/save").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/company/findUsersCompany/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/company/refresh").hasAnyRole("USER", "ADMIN")
+                        //institution
+                        .requestMatchers(HttpMethod.POST, "/institution/save").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/institution/findUsersInstitution/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/institution/refresh").hasAnyRole("USER", "ADMIN")
 
                         //Local
                         .requestMatchers(HttpMethod.POST, "/api/locations/save").hasRole("ADMIN")
@@ -62,7 +62,7 @@ public class SecurityConfig  {
                         .requestMatchers(HttpMethod.GET, "/api/locations/localById/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/locations/update").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/locations/findAddressByZipCode/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/locations/listLocalByCompany/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/locations/listLocalByInstitution/**").hasAnyRole("USER", "ADMIN")
 
                         //Reservation
                         .requestMatchers(HttpMethod.POST, "/api/reservations/save").hasAnyRole("USER", "ADMIN")
@@ -70,7 +70,7 @@ public class SecurityConfig  {
                         .requestMatchers(HttpMethod.PUT, "/api/reservations/update").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/reservations/delete/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/reservations/listReservations").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/reservations/listReservationsByCompany/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reservations/listReservationsByInstitution/**").hasAnyRole("USER", "ADMIN")
 
                         //Room
                         .requestMatchers(HttpMethod.POST, "/api/rooms/save").hasRole("ADMIN")

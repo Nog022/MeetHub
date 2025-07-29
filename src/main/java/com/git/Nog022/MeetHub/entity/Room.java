@@ -14,13 +14,13 @@ import java.util.List;
 @Table(name = "ROOMS")
 public class Room {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ROOM_ID")
     private Long id;
-    @Column(name = "name_room", length = 255)
+    @Column(name = "NAME_ROOM", length = 255)
     @NotEmpty(message = "{field.required}")
     private String name;
-    @Column(name = "capacity", length = 255)
+    @Column(name = "CAPACITY", length = 255)
     @NotNull(message = "{capacity.null}")
     private Integer capacity;
 
@@ -30,7 +30,7 @@ public class Room {
 
     @ElementCollection
     @CollectionTable(name = "room_resources", joinColumns = @JoinColumn(name = "room_id"))
-    @Column(name = "resource")
+    @Column(name = "RESOURCE")
     private List<String> resources = new ArrayList<>();
 
 
@@ -38,7 +38,7 @@ public class Room {
     @JsonBackReference
     private List<Reservation> reservations;
 
-    @Column(name = "last_reservation_id")
+    @Column(name = "LAST_RESERVATION_ID")
     private Integer lastReservationId;
 
 }

@@ -63,9 +63,9 @@ public class LocalController {
         return localService.findAddressByZipCode(cep);
     }
 
-    @GetMapping("/listLocalByCompany/{id}")
+    @GetMapping("/listLocalByInstitution/{id}")
     //@Operation(summary = "List all rooms", description = "Returns a list of all registered rooms")
-    public List<LocalDTO> listLocalByCompany(@PathVariable Long id) {
-        return localService.listLocalByCompany(id);
+    public List<LocalDTO> listLocalByInstitution(@PathVariable Long id) {
+        return localService.listLocalByInstitution(id);
     }
 }

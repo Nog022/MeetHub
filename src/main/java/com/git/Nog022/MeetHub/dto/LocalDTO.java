@@ -13,6 +13,6 @@ public record LocalDTO(
         String state,
         String number,
         String complement,
-        Long companyId
+        Long institutionId
 ) {
 }

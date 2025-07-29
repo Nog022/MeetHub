@@ -5,8 +5,9 @@ import com.git.Nog022.MeetHub.dto.*;
 import com.git.Nog022.MeetHub.entity.User;
 import com.git.Nog022.MeetHub.enums.UserRole;
 import com.git.Nog022.MeetHub.repository.UserRepository;
-import com.git.Nog022.MeetHub.service.CompanyService;
+
 import com.git.Nog022.MeetHub.service.EmailService;
+import com.git.Nog022.MeetHub.service.InstitutionService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public class AuthorizationController {
     private EmailService emailService;
 
     @Autowired
-    private CompanyService companyService;
+    private InstitutionService institutionService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Validated AuthorizationDTO data) {
@@ -81,24 +82,24 @@ public class AuthorizationController {
             logger.info("Token JWT gerado com sucesso");
 
 
-            if(user.getCompany() == null) {
-                companyService.joinCompanyWithDomain(user);
+            if(user.getInstitution() == null) {
+                institutionService.joinInstitutionIdWithDomain(user);
             }
             logger.info("aqui!!!!!");
             //logger.info("Usuario: {}", user.toString());
 
-            CompanyDTO companyDTO = null;
+            InstitutionDTO institutionDTO = null;
 
-            if (user.getCompany() != null) {
-                companyDTO = new CompanyDTO(
-                        user.getCompany().getId(),
-                        user.getCompany().getCnpj(),
-                        user.getCompany().getName(),
-                        user.getCompany().getDomains(),
+            if (user.getInstitution() != null) {
+                institutionDTO = new InstitutionDTO(
+                        user.getInstitution().getId(),
+                        user.getInstitution().getCnpj(),
+                        user.getInstitution().getName(),
+                        user.getInstitution().getDomains(),
                         user.getEmail()
                 );
 
-                logger.info("companyDTO: {}", companyDTO);
+                logger.info("InstitutionDTO: {}", institutionDTO);
             }
 
             return ResponseEntity.ok(new LoginResponseDTO(
@@ -108,7 +109,7 @@ public class AuthorizationController {
                     user.getCpf(),
                     user.getRole(),
                     user.isEmailVerificado(),
-                    companyDTO
+                    institutionDTO
             ));
         } catch (Exception e) {
             logger.error("Erro durante o login: {}", e.getMessage(), e);

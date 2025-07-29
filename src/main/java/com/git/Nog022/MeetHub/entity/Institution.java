@@ -10,33 +10,33 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "COMPANY")
-public class Company {
+@Table(name = "INSTITUTION")
+public class Institution  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "COMPANY_ID")
+    @Column(name = "INSTITUTION_ID")
     private Long id;
 
-    @Column(name = "company_name", length = 255)
+    @Column(name = "INSTITUTION_NAME", length = 255)
     @NotNull
     @NotEmpty
     private String name;
 
-    @Column(name = "cnpj", length = 14, nullable = false, updatable = false)
+    @Column(name = "CNPJ", length = 14, nullable = false, updatable = false)
     @NotNull
     @NotEmpty
     @CNPJ(message = "invalid cnpj")
     private String cnpj;
 
     @ElementCollection
-    @Column(name = "domain", length = 255, unique = true)
+    @Column(name = "DOMAIN", length = 255, unique = true)
     private List<String> domains;
 
 
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Local> locals;
 
-    @OneToMany(mappedBy = "company")
+    @OneToMany(mappedBy = "institution")
     private List<User> users;
 
 }

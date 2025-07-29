@@ -1,7 +1,8 @@
 package com.git.Nog022.MeetHub.service.impl;
 
-import com.git.Nog022.MeetHub.entity.Company;
-import com.git.Nog022.MeetHub.repository.CompanyRepository;
+
+import com.git.Nog022.MeetHub.entity.Institution;
+import com.git.Nog022.MeetHub.repository.InstitutionRepository;
 import com.git.Nog022.MeetHub.service.ValidateDomainService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +15,15 @@ import java.util.Optional;
 public class ValidateDomainServiceImpl implements ValidateDomainService {
 
     @Autowired
-    private CompanyRepository companyRepository;
+    private InstitutionRepository institutionRepository;
 
     @Override
-    public Optional<Company> validateDomain(String email) {
+    public Optional<Institution> validateDomain(String email) {
 
         String domain = email.substring(email.indexOf("@") + 1);
 
-        Optional<Company> optionalCompany = companyRepository.findByDomains(domain);
-        return optionalCompany;
+        Optional<Institution> optionalInstitution = institutionRepository.findByDomains(domain);
+        return optionalInstitution;
 
     }
 }

@@ -10,6 +10,6 @@ public record ReservationDTO(
         LocalTime startTime,
         LocalTime endTime,
         String eventDescription,
-        Long companyId
+        Long institutionId
 ) {
 }
