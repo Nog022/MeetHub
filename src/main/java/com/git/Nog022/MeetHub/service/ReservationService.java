@@ -13,15 +13,15 @@ import java.util.List;
 @Service
 public interface ReservationService {
 
-    ReservationDTO save(ReservationDTO reservation);
+    ReservationDTO save(ReservationDTO reservation, Long userId);
 
-    void delete(Integer id);
+    void delete(Long userId, Integer id, String role);
 
     void update(Reservation reservation);
 
     List<Reservation> listReservations();
 
-    List<ListReservarionDTO> listReservationsByCompany(Long id);
+    List<ListReservarionDTO> listReservationsByInstitution(Long id);
 
     Reservation reservationById(Integer id);
 }

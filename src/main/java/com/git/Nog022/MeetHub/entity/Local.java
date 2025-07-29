@@ -11,7 +11,7 @@ import lombok.Data;
 @Table(name = "LOCATIONS")
 public class Local {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "LOCATION_ID")
     private Long id;
 
@@ -46,8 +46,8 @@ public class Local {
     private String complement;
 
     @ManyToOne
-    @JoinColumn(name = "COMPANY_ID")
-    private Company company;
+    @JoinColumn(name = "INSTITUTION_ID")
+    private Institution institution;
 
 
 

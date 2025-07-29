@@ -5,7 +5,7 @@ import com.git.Nog022.MeetHub.dto.ViaCepResponseDTO;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.exception.ValidationException;
 import com.git.Nog022.MeetHub.repository.LocalRepository;
-import com.git.Nog022.MeetHub.service.CompanyService;
+import com.git.Nog022.MeetHub.service.InstitutionService;
 import com.git.Nog022.MeetHub.service.LocalService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class LocalServiceImpl implements LocalService {
     private final RestTemplate restTemplate;
 
     @Autowired
-    private CompanyService companyService;
+    private InstitutionService institutionService;
 
 
     public LocalServiceImpl(RestTemplate restTemplate) {
@@ -54,7 +54,7 @@ public class LocalServiceImpl implements LocalService {
         local.setNumber(dto.number());
         local.setComplement(dto.complement());
 
-        local.setCompany(companyService.findById(dto.companyId()));
+        local.setInstitution(institutionService.findById(dto.institutionId()));
         localRepository.save(local);
         return ResponseEntity.ok(dto);
     }
@@ -133,8 +133,8 @@ public class LocalServiceImpl implements LocalService {
     }
 
     @Override
-    public List<LocalDTO> listLocalByCompany(Long id) {
-        List<Local> listLocal = localRepository.findByCompanyId(id);
+    public List<LocalDTO> listLocalByInstitution(Long id) {
+        List<Local> listLocal = localRepository.findByInstitutionId(id);
 
         return listLocal.stream().map(local -> new LocalDTO(
                 local.getId(),
@@ -146,7 +146,7 @@ public class LocalServiceImpl implements LocalService {
                 local.getState(),
                 local.getNumber(),
                 local.getComplement(),
-                local.getCompany().getId()
+                local.getInstitution().getId()
         )).toList();
 
 

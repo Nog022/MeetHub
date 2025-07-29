@@ -1,14 +1,15 @@
 package com.git.Nog022.MeetHub.dto;
 
-import com.git.Nog022.MeetHub.entity.Company;
+
 
 import java.util.List;
 
-public record CompanyResponseDTO(
+public record InstitutionResponseDTO(
         Long id,
         String cnpj,
         String name,
-        List<String> domain
+        List<String> domain,
+        String token
 
 ) {
 }

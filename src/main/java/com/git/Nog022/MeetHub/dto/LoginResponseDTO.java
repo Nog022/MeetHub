@@ -1,6 +1,6 @@
 package com.git.Nog022.MeetHub.dto;
 
-import com.git.Nog022.MeetHub.entity.Company;
+
 import com.git.Nog022.MeetHub.enums.UserRole;
 
 public record LoginResponseDTO(
@@ -10,6 +10,6 @@ public record LoginResponseDTO(
         String cpf,
         UserRole role,
         boolean emailVerificado,
-        CompanyDTO company
+        InstitutionDTO institutionDTO
 ) {
 }

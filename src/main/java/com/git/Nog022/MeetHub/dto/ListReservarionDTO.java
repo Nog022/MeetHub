@@ -10,6 +10,7 @@ public record ListReservarionDTO(
         LocalDateTime date,
         LocalTime startTime,
         LocalTime endTime,
-        String eventDescription
+        String eventDescription,
+        UserDTO userDTO
 ) {
 }

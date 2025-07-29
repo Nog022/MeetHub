@@ -28,5 +28,5 @@ public interface LocalService {
 
     ViaCepResponseDTO findAddressByZipCode(String cep);
 
-    List<LocalDTO> listLocalByCompany(Long id);
+    List<LocalDTO> listLocalByInstitution(Long id);
 }

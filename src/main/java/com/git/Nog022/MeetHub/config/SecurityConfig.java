@@ -39,9 +39,51 @@ public class SecurityConfig  {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+
+                        //Auth
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/contato/save").hasRole("USER")
+
+                        //user
+                        .requestMatchers(HttpMethod.POST, "/api/users/save").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/delete/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/users/update/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/users/listAll").hasRole("ADMIN")
+
+                        //institution
+                        .requestMatchers(HttpMethod.POST, "/institution/save").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/institution/findUsersInstitution/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/institution/refresh").hasAnyRole("USER", "ADMIN")
+
+                        //Local
+                        .requestMatchers(HttpMethod.POST, "/api/locations/save").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/locations/listLocal").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/locations/delete/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/locations/localById/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/locations/update").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/locations/findAddressByZipCode/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/locations/listLocalByInstitution/**").hasAnyRole("USER", "ADMIN")
+
+                        //Reservation
+                        .requestMatchers(HttpMethod.POST, "/api/reservations/save").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reservations/reservationById/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/reservations/update").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/reservations/delete/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reservations/listReservations").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reservations/listReservationsByInstitution/**").hasAnyRole("USER", "ADMIN")
+
+                        //Room
+                        .requestMatchers(HttpMethod.POST, "/api/rooms/save").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/rooms/listRoom").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/rooms/update/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/rooms/delete/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/rooms/listRoomByLocal/**").hasAnyRole("USER", "ADMIN")
+
+
+
+
+
+
                         .anyRequest().permitAll()
 
                 )

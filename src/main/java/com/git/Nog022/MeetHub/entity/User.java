@@ -21,14 +21,14 @@ import java.util.List;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID")
-    private Integer id;
+    private Long id;
 
     @Column(name = "NAME", length = 100)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "EMAIL_VERIFICATION")
     private boolean emailVerificado = false;
 
     @Column(name = "EMAIL", length = 100,unique = true)
@@ -47,8 +47,8 @@ public class User implements UserDetails {
     private UserRole role;
 
     @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
+    @JoinColumn(name = "INSTITUTION_ID")
+    private Institution institution;
 
     public User(String name, String email, String cpf, String password, UserRole role) {
         this.name = name;
