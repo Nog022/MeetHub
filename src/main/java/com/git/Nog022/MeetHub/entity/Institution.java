@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.validator.constraints.br.CNPJ;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "INSTITUTION")
+@ToString(exclude = "users")
 public class Institution  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
