@@ -69,14 +69,20 @@ public class LocalServiceImpl implements LocalService {
     }
 
     @Override
-    public void update(Local local) {
-        localRepository.findById((long) Math.toIntExact(local.getId())).map(
-                localFind -> {
-                    local.setId(localFind.getId());
-                    localRepository.save(local);
-                    return localFind;
-                }
-        ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
+    public void update(LocalDTO dto) {
+        Local local = localRepository.findById(dto.id()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
+
+        if(local != null) {
+            local.setName(dto.name());
+            local.setCep(dto.cep());
+            local.setAddress(dto.address());
+            local.setNeighborhood(dto.neighborhood());
+            local.setCity(dto.city());
+            local.setState(dto.state());
+            local.setNumber(dto.number());
+            local.setComplement(dto.complement());
+            localRepository.save(local);
+        }
 
     }
 

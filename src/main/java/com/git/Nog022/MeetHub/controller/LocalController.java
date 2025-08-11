@@ -52,10 +52,9 @@ public class LocalController {
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Update an existing local", description = "Updates the information of an existing local")
-    public void update(@RequestBody @Validated Local local) {
+    public void update(@RequestBody @Validated LocalDTO local) {
         localService.update(local);
     }
-
 
     @GetMapping("/findAddressByZipCode/{cep}")
     @Operation(summary = "Get a info by cep", description = "Returns the details of a local by its cep")
