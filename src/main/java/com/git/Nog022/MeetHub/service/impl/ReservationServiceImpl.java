@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -116,8 +117,14 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<ListReservarionDTO> listReservationsByInstitution(Long id) {
-        List<Reservation> listReservation =  reservationRepository.findByInstitutionId(id);
+    public List<ListReservarionDTO> listReservationsByInstitution(Long id, LocalDate date, Integer capacity, String roomName, String localName) {
+        logger.info("Service Reservation List");
+        logger.info("id reservation: {}", id);
+        logger.info("date reservation: {}", date);
+        logger.info("capacity reservation: {}", capacity);
+        logger.info("room reservation: {}", roomName);
+        logger.info("local reservation: {}", localName);
+        List<Reservation> listReservation =  reservationRepository.reservationByFilter(id,date,capacity,roomName,localName);
         List<ListReservarionDTO> listReservarionDTO = new ArrayList<>();
         for (Reservation reservation : listReservation) {
             RoomReportDTO roomReportDTO = toResponseRoomReportDTO(reservation.getRoom());

@@ -12,10 +12,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -71,8 +73,14 @@ public class ReservationController {
 
     @GetMapping("/listReservationsByInstitution/{id}")
     @Operation(summary = "List all reservations by Institution id", description = "Returns a list of all registered reservations")
-    public List<ListReservarionDTO> listReservationsByRoom(@PathVariable Long id) {
-        return reservationService.listReservationsByInstitution(id);
+    public List<ListReservarionDTO> listReservationsByRoom(
+            @PathVariable Long id,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false) Integer capacity,
+            @RequestParam(required = false) String roomName,
+            @RequestParam(required = false) String localName
+            ) {
+        return reservationService.listReservationsByInstitution(id,date,capacity,roomName,localName);
     }
 
 

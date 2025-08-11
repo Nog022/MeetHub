@@ -81,7 +81,7 @@ public class AuthorizationController {
             var token = tokenService.generateToken(usuario);
             logger.info("Token JWT gerado com sucesso");
 
-
+            logger.info("usuario: {}", user.getInstitution());
             if(user.getInstitution() == null) {
                 institutionService.joinInstitutionIdWithDomain(user);
             }

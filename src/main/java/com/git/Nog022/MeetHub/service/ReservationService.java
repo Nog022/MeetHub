@@ -7,6 +7,7 @@ import com.git.Nog022.MeetHub.entity.Reservation;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -21,7 +22,7 @@ public interface ReservationService {
 
     List<Reservation> listReservations();
 
-    List<ListReservarionDTO> listReservationsByInstitution(Long id);
+    List<ListReservarionDTO> listReservationsByInstitution(Long id, LocalDate date, Integer capacity,String roomName, String localName);
 
     Reservation reservationById(Integer id);
 }
