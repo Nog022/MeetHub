@@ -34,11 +34,11 @@ public class RoomController {
         return roomService.listRoom();
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Update room details", description = "Updates the details of an existing room by its ID")
-    public void update(@PathVariable Long id, @RequestBody @Validated Room room) {
-        roomService.update(id, room);
+    public void update(@RequestBody @Validated RoomDTO room) {
+        roomService.update(room);
     }
 
     @DeleteMapping("/delete/{id}")

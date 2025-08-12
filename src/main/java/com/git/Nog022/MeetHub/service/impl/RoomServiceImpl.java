@@ -69,14 +69,17 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void update(Long id, Room room) {
-        roomRepository.findById(id).map(
-                roomFind -> {
-                    room.setId(roomFind.getId());
-                    roomRepository.save(room);
-                    return roomFind;
-                }
-        ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not find"));
+    public void update(RoomDTO dto) {
+        Room room = roomRepository.findById(dto.id()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not find"));
+
+        if(room != null) {
+            room.setName(dto.name());
+            room.setCapacity(dto.capacity());
+            room.getResources().clear();
+            room.getResources().addAll(dto.resources());
+            roomRepository.save(room);
+
+        }
 
     }
 
