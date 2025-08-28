@@ -22,6 +22,8 @@ public interface LocalService {
 
     List<Local> listLocal   ();
 
+    LocalDTO localDTOById(Long id);
+
     Local localById(Long id);
 
     boolean verifyAddressAndCityAndState(String address, String city, String state);

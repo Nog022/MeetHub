@@ -1,11 +1,15 @@
 package com.git.Nog022.MeetHub.service.impl;
 
+import com.git.Nog022.MeetHub.dto.LocalDTO;
 import com.git.Nog022.MeetHub.dto.RoomDTO;
+import com.git.Nog022.MeetHub.dto.RoomDetailDTO;
+import com.git.Nog022.MeetHub.entity.Institution;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.entity.Reservation;
 import com.git.Nog022.MeetHub.entity.Room;
 import com.git.Nog022.MeetHub.repository.LocalRepository;
 import com.git.Nog022.MeetHub.repository.RoomRepository;
+import com.git.Nog022.MeetHub.service.InstitutionService;
 import com.git.Nog022.MeetHub.service.LocalService;
 import com.git.Nog022.MeetHub.service.RoomService;
 import jakarta.transaction.Transactional;
@@ -28,6 +32,9 @@ public class RoomServiceImpl implements RoomService {
 
     @Autowired
     private LocalService localService;
+
+    @Autowired
+    private InstitutionService institutionService;
 
     @Override
     public RoomDTO save(RoomDTO dto) {
@@ -86,6 +93,53 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public List<RoomDTO> listRoomByLocal(Long id) {
         List<Room> rooms = roomRepository.findByLocalId(id);
+        return getRoomDTOS(rooms);
+
+    }
+
+    @Override
+    public Room roomById(Long id) {
+        return roomRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not find"));
+    }
+
+    @Override
+    public List<RoomDetailDTO> listRoomByInstitution(Long id) {
+        Institution institution = institutionService.findById(id);
+        List<RoomDTO> dtos = new ArrayList<>();
+        List<Room> rooms = new ArrayList<>();
+        if(institution != null) {
+            List<Local> locals = institution.getLocals();
+
+            for (Local local : locals) {
+                rooms.addAll(roomRepository.findByLocalId(local.getId()));
+            }
+        }
+        return this.setRoomDTO(rooms);
+
+
+    }
+
+    private List<RoomDetailDTO> setRoomDTO(List<Room> rooms) {
+        return getRoomDetailDTO(rooms);
+    }
+
+    private List<RoomDetailDTO> getRoomDetailDTO(List<Room> rooms) {
+        List<RoomDetailDTO> dtos = new ArrayList<>();
+        for (Room room : rooms) {
+            RoomDetailDTO dto = new RoomDetailDTO(
+                    room.getId(),
+                    room.getName(),
+                    room.getCapacity(),
+                    room.getLocal().getName(),
+                    room.getResources()
+            );
+            dtos.add(dto);
+        }
+
+        return dtos;
+    }
+
+    private List<RoomDTO> getRoomDTOS(List<Room> rooms) {
         List<RoomDTO> dtos = new ArrayList<>();
         for (Room room : rooms) {
             RoomDTO dto = new RoomDTO(
@@ -97,17 +151,25 @@ public class RoomServiceImpl implements RoomService {
             );
             dtos.add(dto);
         }
+
         return dtos;
-
-    }
-
-    @Override
-    public Room roomById(Long id) {
-        return roomRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not find"));
     }
 
     @Override
     public List<Room> listRoom() {
         return roomRepository.findAll();
+    }
+
+    @Override
+    public RoomDTO roomDtoById(Long id) {
+        Room room = roomRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not find"));
+        return new RoomDTO(
+                room.getId(),
+                room.getName(),
+                room.getCapacity(),
+                room.getLocal().getId(),
+                room.getResources()
+        );
+
     }
 }

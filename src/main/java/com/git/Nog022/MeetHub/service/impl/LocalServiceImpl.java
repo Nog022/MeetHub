@@ -2,8 +2,10 @@ package com.git.Nog022.MeetHub.service.impl;
 
 import com.git.Nog022.MeetHub.dto.LocalDTO;
 import com.git.Nog022.MeetHub.dto.ViaCepResponseDTO;
+import com.git.Nog022.MeetHub.entity.Institution;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.exception.ValidationException;
+import com.git.Nog022.MeetHub.repository.InstitutionRepository;
 import com.git.Nog022.MeetHub.repository.LocalRepository;
 import com.git.Nog022.MeetHub.service.InstitutionService;
 import com.git.Nog022.MeetHub.service.LocalService;
@@ -32,6 +34,9 @@ public class LocalServiceImpl implements LocalService {
     @Autowired
     private InstitutionService institutionService;
 
+    @Autowired
+    private InstitutionRepository institutionRepository;
+
 
     public LocalServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -44,6 +49,7 @@ public class LocalServiceImpl implements LocalService {
         if(verifyLocalExist(dto.address(), dto.city(), dto.state())) {
             throw new ValidationException("Address, City and State are not valid");
         }
+        Institution institution = institutionService.findById(dto.institutionId());
         Local local = new Local();
         local.setName(dto.name());
         local.setCep(dto.cep());
@@ -53,9 +59,11 @@ public class LocalServiceImpl implements LocalService {
         local.setState(dto.state());
         local.setNumber(dto.number());
         local.setComplement(dto.complement());
-
-        local.setInstitution(institutionService.findById(dto.institutionId()));
+        local.setInstitution(institution);
         localRepository.save(local);
+
+        institution.getLocals().add(local);
+        institutionRepository.save(institution);
         return ResponseEntity.ok(dto);
     }
 
@@ -93,8 +101,29 @@ public class LocalServiceImpl implements LocalService {
     }
 
     @Override
+    public LocalDTO localDTOById(Long id) {
+        Local local = localRepository
+                .findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
+        return new LocalDTO(
+                local.getId(),
+                local.getName(),
+                local.getCep(),
+                local.getAddress(),
+                local.getNeighborhood(),
+                local.getCity(),
+                local.getState(),
+                local.getNumber(),
+                local.getComplement(),
+                local.getInstitution().getId()
+        );
+    }
+
+    @Override
     public Local localById(Long id) {
-        return localRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
+        return localRepository
+                .findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
+
+
 
     }
     @Override

@@ -45,8 +45,8 @@ public class LocalController {
 
     @GetMapping("/localById/{id}")
     @Operation(summary = "Get a local by ID", description = "Returns the details of a local by its ID")
-    public Local localById(@PathVariable Long id) {
-        return localService.localById(id);
+    public LocalDTO localById(@PathVariable Long id) {
+        return localService.localDTOById(id);
     }
 
     @PutMapping("/update")
