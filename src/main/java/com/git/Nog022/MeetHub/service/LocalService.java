@@ -18,9 +18,11 @@ public interface LocalService {
 
     void delete(Long id);
 
-    void update(Local local);
+    void update(LocalDTO local);
 
     List<Local> listLocal   ();
+
+    LocalDTO localDTOById(Long id);
 
     Local localById(Long id);
 
