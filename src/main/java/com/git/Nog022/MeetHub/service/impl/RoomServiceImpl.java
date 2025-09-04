@@ -1,17 +1,14 @@
 package com.git.Nog022.MeetHub.service.impl;
 
-import com.git.Nog022.MeetHub.dto.LocalDTO;
 import com.git.Nog022.MeetHub.dto.RoomDTO;
 import com.git.Nog022.MeetHub.dto.RoomDetailDTO;
 import com.git.Nog022.MeetHub.entity.Institution;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.entity.Reservation;
 import com.git.Nog022.MeetHub.entity.Room;
-import com.git.Nog022.MeetHub.repository.LocalRepository;
+import com.git.Nog022.MeetHub.repository.ReservationRepository;
 import com.git.Nog022.MeetHub.repository.RoomRepository;
-import com.git.Nog022.MeetHub.service.InstitutionService;
-import com.git.Nog022.MeetHub.service.LocalService;
-import com.git.Nog022.MeetHub.service.RoomService;
+import com.git.Nog022.MeetHub.service.*;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -31,10 +29,18 @@ public class RoomServiceImpl implements RoomService {
     private RoomRepository roomRepository;
 
     @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
     private LocalService localService;
 
     @Autowired
     private InstitutionService institutionService;
+
+    @Autowired
+    private ReservationHistoryService reservationHistoryService;
+
+
 
     @Override
     public RoomDTO save(RoomDTO dto) {
@@ -67,11 +73,42 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    public void save(Room room) {
+        roomRepository.save(room);
+    }
+
+    @Override
+    public Optional<Room> findById(Long id) {
+        return roomRepository.findById(id);
+    }
+
+    @Override
     public void delete(Long id) {
-        roomRepository.findById(id).map(roomId -> {
-            roomRepository.delete(roomId);
-            return roomId;
-        }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not find"));
+        log.info("delete room");
+        try{
+            Room room = roomRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not find"));
+            List<Reservation> reservations = room.getReservations();
+            log.info("Room : {}", room.getReservations());
+
+
+            if(reservations.isEmpty()){
+                log.info("the list of reservations is empty");
+                roomRepository.delete(room);
+
+            }else{
+                log.info("the reservation list is different from empty");
+                reservationHistoryService.saveReservationHistory(reservations);
+                reservationRepository.deleteAll(reservations);
+                roomRepository.delete(room);
+
+            }
+        }catch (Exception e){
+            log.error("delete: "+ e.getMessage());
+        }
+
+
+
+
 
     }
 
