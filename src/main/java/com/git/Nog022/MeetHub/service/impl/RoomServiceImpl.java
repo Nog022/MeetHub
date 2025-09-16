@@ -6,6 +6,7 @@ import com.git.Nog022.MeetHub.entity.Institution;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.entity.Reservation;
 import com.git.Nog022.MeetHub.entity.Room;
+import com.git.Nog022.MeetHub.repository.LocalRepository;
 import com.git.Nog022.MeetHub.repository.ReservationRepository;
 import com.git.Nog022.MeetHub.repository.RoomRepository;
 import com.git.Nog022.MeetHub.service.*;
@@ -27,6 +28,9 @@ public class RoomServiceImpl implements RoomService {
 
     @Autowired
     private RoomRepository roomRepository;
+
+    @Autowired
+    private LocalRepository localRepository;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -60,7 +64,9 @@ public class RoomServiceImpl implements RoomService {
 
 
 
-       roomRepository.save(room);
+        roomRepository.save(room);
+        local.getRooms().add(room);
+        localRepository.save(local);
 
 
         return new RoomDTO(

@@ -71,6 +71,33 @@ public class InstitutionServiceImpl implements InstitutionService {
         throw new ValidationException("Erro Save Institution");
     }
 
+    @Override
+    public InstitutionDTO update(InstitutionDTO institutionDTO) {
+        logger.info("entrou em atualizar institution");
+        try{
+            Institution institution = institutionRepository.findByCnpj(institutionDTO.cnpj());
+            institution.setName(institutionDTO.name());
+            institution.getDomains().clear();
+            institution.getDomains().addAll(institutionDTO.domain() == null ? Collections.emptyList() : new ArrayList<>(institutionDTO.domain()));
+            institutionRepository.save(institution);
+
+
+            return new InstitutionDTO(
+                    institution.getId(),
+                    institution.getCnpj(),
+                    institution.getName(),
+                    institution.getDomains(),
+                    null
+
+            );
+        } catch (Exception e) {
+            logger.error("Erro atualizar institution", e);
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
 
     @Override
     public void joinInstitutionIdWithDomain(User user) {

@@ -1,10 +1,13 @@
 package com.git.Nog022.MeetHub.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.git.Nog022.MeetHub.enums.RoomBlockType;
 import com.git.Nog022.MeetHub.enums.RoomLocationType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @Entity
@@ -42,8 +45,11 @@ public class Local {
     private String state;
 
     @Column(name = "COMPLEMENT")
-    @NotEmpty
     private String complement;
+
+    @OneToMany(mappedBy = "local", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private List<Room> rooms;
 
     @ManyToOne
     @JoinColumn(name = "INSTITUTION_ID")
