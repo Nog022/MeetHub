@@ -99,7 +99,6 @@ public class AuthorizationController {
                         user.getEmail()
                 );
 
-                logger.info("InstitutionDTO: {}", institutionDTO);
             }
 
             return ResponseEntity.ok(new LoginResponseDTO(

@@ -3,10 +3,13 @@ package com.git.Nog022.MeetHub.controller;
 
 import com.git.Nog022.MeetHub.dto.InstitutionDTO;
 import com.git.Nog022.MeetHub.dto.InstitutionResponseDTO;
+import com.git.Nog022.MeetHub.dto.RoomDTO;
 import com.git.Nog022.MeetHub.dto.UserDTO;
 
 
 import com.git.Nog022.MeetHub.service.InstitutionService;
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/institution")
+@Slf4j
 public class InstitutionController {
 
     @Autowired
@@ -35,11 +39,21 @@ public class InstitutionController {
     }
 
 
+    @PutMapping("/update")
+    @Operation(summary = "Update institution ", description = "Updates the institution")
+    public InstitutionDTO update(@RequestBody @Validated InstitutionDTO institutionDTO) {
+        InstitutionDTO institution = institutionService.update(institutionDTO);
+        log.info("intituicao atualizada: "+institution.toString());
+        return institution;
+    }
 
-     //fazer um metodo para entrar em empresas que não possuem dominio
+
+    //fazer um metodo para entrar em empresas que não possuem dominio
     @PostMapping("/refresh")
     @ResponseStatus(HttpStatus.CREATED)
     public void join(@RequestBody @Validated String email) {
         institutionService.joinInstitutionWithDomain(email);
     }
+
+
 }

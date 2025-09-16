@@ -2,11 +2,18 @@ package com.git.Nog022.MeetHub.service.impl;
 
 import com.git.Nog022.MeetHub.dto.LocalDTO;
 import com.git.Nog022.MeetHub.dto.ViaCepResponseDTO;
+import com.git.Nog022.MeetHub.entity.Institution;
 import com.git.Nog022.MeetHub.entity.Local;
+import com.git.Nog022.MeetHub.entity.Reservation;
+import com.git.Nog022.MeetHub.entity.Room;
 import com.git.Nog022.MeetHub.exception.ValidationException;
+import com.git.Nog022.MeetHub.repository.InstitutionRepository;
 import com.git.Nog022.MeetHub.repository.LocalRepository;
+import com.git.Nog022.MeetHub.repository.ReservationRepository;
+import com.git.Nog022.MeetHub.repository.RoomRepository;
 import com.git.Nog022.MeetHub.service.InstitutionService;
 import com.git.Nog022.MeetHub.service.LocalService;
+import com.git.Nog022.MeetHub.service.ReservationHistoryService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +37,19 @@ public class LocalServiceImpl implements LocalService {
     private final RestTemplate restTemplate;
 
     @Autowired
+    private RoomRepository roomRepository;
+
+    @Autowired
     private InstitutionService institutionService;
+
+    @Autowired
+    private InstitutionRepository institutionRepository;
+
+    @Autowired
+    private ReservationHistoryService reservationHistoryService;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
 
     public LocalServiceImpl(RestTemplate restTemplate) {
@@ -44,6 +63,7 @@ public class LocalServiceImpl implements LocalService {
         if(verifyLocalExist(dto.address(), dto.city(), dto.state())) {
             throw new ValidationException("Address, City and State are not valid");
         }
+        Institution institution = institutionService.findById(dto.institutionId());
         Local local = new Local();
         local.setName(dto.name());
         local.setCep(dto.cep());
@@ -53,30 +73,51 @@ public class LocalServiceImpl implements LocalService {
         local.setState(dto.state());
         local.setNumber(dto.number());
         local.setComplement(dto.complement());
-
-        local.setInstitution(institutionService.findById(dto.institutionId()));
+        local.setInstitution(institution);
         localRepository.save(local);
+
+        institution.getLocals().add(local);
+        institutionRepository.save(institution);
         return ResponseEntity.ok(dto);
     }
 
     @Override
     public void delete(Long id) {
-        localRepository.findById(id).map(localId -> {
-            localRepository.delete(localId);
-            return localId;
-        }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
+        Local local = localRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
+        local.getRooms().forEach(room -> {
+            List<Reservation> reservations = room.getReservations();
+            if(reservations.isEmpty()){
+                log.info("the list of reservations is empty");
+                roomRepository.delete(room);
+
+            }else{
+                log.info("the reservation list is different from empty");
+                reservationHistoryService.saveReservationHistory(reservations);
+                reservationRepository.deleteAll(reservations);
+                roomRepository.delete(room);
+
+            }
+        });
+
+        localRepository.deleteById(id);
 
     }
 
     @Override
-    public void update(Local local) {
-        localRepository.findById((long) Math.toIntExact(local.getId())).map(
-                localFind -> {
-                    local.setId(localFind.getId());
-                    localRepository.save(local);
-                    return localFind;
-                }
-        ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
+    public void update(LocalDTO dto) {
+        Local local = localRepository.findById(dto.id()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
+
+        if(local != null) {
+            local.setName(dto.name());
+            local.setCep(dto.cep());
+            local.setAddress(dto.address());
+            local.setNeighborhood(dto.neighborhood());
+            local.setCity(dto.city());
+            local.setState(dto.state());
+            local.setNumber(dto.number());
+            local.setComplement(dto.complement());
+            localRepository.save(local);
+        }
 
     }
 
@@ -87,8 +128,29 @@ public class LocalServiceImpl implements LocalService {
     }
 
     @Override
+    public LocalDTO localDTOById(Long id) {
+        Local local = localRepository
+                .findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
+        return new LocalDTO(
+                local.getId(),
+                local.getName(),
+                local.getCep(),
+                local.getAddress(),
+                local.getNeighborhood(),
+                local.getCity(),
+                local.getState(),
+                local.getNumber(),
+                local.getComplement(),
+                local.getInstitution().getId()
+        );
+    }
+
+    @Override
     public Local localById(Long id) {
-        return localRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
+        return localRepository
+                .findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Local not find"));
+
+
 
     }
     @Override

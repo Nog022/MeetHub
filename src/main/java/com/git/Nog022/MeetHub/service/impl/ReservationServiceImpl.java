@@ -33,11 +33,10 @@ public class ReservationServiceImpl implements ReservationService {
 
     public static Logger logger = LoggerFactory.getLogger(ReservationServiceImpl.class);
 
-    @Autowired
-    private RoomRepository roomRepository;
+
 
     @Autowired
-    private RoomService roomService;
+    private RoomRepository roomRepository;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -55,27 +54,30 @@ public class ReservationServiceImpl implements ReservationService {
         logger.info("Service Reservation Save");
         logger.info("dto reservation: {}", dto);
 
-        if(roomRepository != null && roomService != null && reservationRepository != null ) {
-            if (checkReservation(dto) ) {
-                Room room = roomService.roomById(dto.roomId());
-                Reservation reservation = new Reservation();
-                reservation.setPersonName(dto.personName());
-                reservation.setRoom(room);
-                reservation.setDate(dto.date());
-                reservation.setStartTime(dto.startTime());
-                reservation.setEndTime(dto.endTime());
-                reservation.setEventDescription(dto.eventDescription());
-                reservation.setInstitution(institutionService.findById(dto.institutionId()));
-                reservation.setUser(userService.findById(userId));
-                reservationRepository.save(reservation);
 
-                room.getReservations().add(reservation);
-                room.setLastReservationId(reservation.getId());
-                roomRepository.save(room);
+        if (checkReservation(dto) ) {
+            Room room = roomRepository.findById(dto.roomId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found"));
 
-                return dto;
-            }
+            Reservation reservation = new Reservation();
+            reservation.setPersonName(dto.personName());
+            reservation.setRoom(room);
+            reservation.setDate(dto.date());
+            reservation.setStartTime(dto.startTime());
+            reservation.setEndTime(dto.endTime());
+            reservation.setEventDescription(dto.eventDescription());
+            reservation.setInstitution(institutionService.findById(dto.institutionId()));
+            reservation.setUser(userService.findById(userId));
+            reservationRepository.save(reservation);
+
+            room.getReservations().add(reservation);
+            room.setLastReservationId(reservation.getId());
+            roomRepository.save(room);
+
+
+            return dto;
         }
+
 
 
         throw new ReservationConflictException("Unable to make reservation: schedule conflict.");
