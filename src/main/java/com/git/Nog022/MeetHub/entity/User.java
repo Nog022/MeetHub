@@ -1,23 +1,39 @@
 package com.git.Nog022.MeetHub.entity;
 
+import com.git.Nog022.MeetHub.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.validator.constraints.br.CPF;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Data
 @Table(name = "USERS")
-public class User {
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString(exclude = "institution")
+public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID")
-    private Integer id;
+    private Long id;
+
     @Column(name = "NAME", length = 100)
     private String name;
 
-    @Column(name = "EMAIL", length = 100)
+    @Column(nullable = false, name = "EMAIL_VERIFICATION")
+    private boolean emailVerificado = false;
+
+    @Column(name = "EMAIL", length = 100,unique = true)
     @NotEmpty(message = "{field.required}")
     private String email;
 
@@ -28,9 +44,68 @@ public class User {
 
     @Column(name = "PASSWORD", length = 100)
     private String password;
-    @Column(name = "COMPANYNAME", length = 255)
-    @NotEmpty(message = "{field.required}")
-    private String companyName;
 
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
+    @ManyToOne
+    @JoinColumn(name = "INSTITUTION_ID")
+    private Institution institution;
+
+    public User(String name, String email, String cpf, String password, UserRole role) {
+        this.name = name;
+        this.email = email;
+        this.cpf = cpf;
+        this.password = password;
+        this.role = role;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", emailVerificado=" + emailVerificado +
+                ", email='" + email + '\'' +
+                ", cpf='" + cpf + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
+                ", institution=" + institution +
+                '}';
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(() -> "ROLE_" + this.role.name());
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
+    }
 }

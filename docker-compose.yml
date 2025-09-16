@@ -1,0 +1,47 @@
+version: '3.8'
+services:
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - 8000:80
+    networks:
+      - broker-kafka
+
+  meet-hub:
+    image: nog022/meet-hub-backend:latest
+    container_name: app-meethub
+    ports:
+      - 8080:8080
+    networks:
+      - broker-kafka
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+
+  db:
+    image: mysql:8
+    container_name: meethub-db-1
+    restart: always
+    environment:
+      MYSQL_DATABASE: meetHubDB
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - broker-kafka
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  mysql_data:
+
+networks:
+  broker-kafka:
+    driver: bridge

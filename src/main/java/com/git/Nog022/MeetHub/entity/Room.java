@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -13,27 +14,31 @@ import java.util.List;
 @Table(name = "ROOMS")
 public class Room {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ROOM_ID")
-    private Integer id;
-    @Column(name = "name_room", length = 255)
+    private Long id;
+    @Column(name = "NAME_ROOM", length = 255)
     @NotEmpty(message = "{field.required}")
     private String name;
-    @Column(name = "capacity", length = 255)
+    @Column(name = "CAPACITY", length = 255)
     @NotNull(message = "{capacity.null}")
     private Integer capacity;
 
     @ManyToOne
     @JoinColumn(name = "idPlace", referencedColumnName = "LOCATION_ID", nullable = false)
     private Local local;
-    @Column(name = "resources", length = 255)
-    private String resources;
+
+    @ElementCollection
+    @CollectionTable(name = "room_resources", joinColumns = @JoinColumn(name = "room_id"))
+    @Column(name = "RESOURCE")
+    private List<String> resources = new ArrayList<>();
+
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     private List<Reservation> reservations;
 
-    @Column(name = "last_reservation_id")
+    @Column(name = "LAST_RESERVATION_ID")
     private Integer lastReservationId;
 
 }
