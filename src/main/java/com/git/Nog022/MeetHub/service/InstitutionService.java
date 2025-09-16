@@ -17,7 +17,7 @@ public interface InstitutionService {
 
     InstitutionResponseDTO save(InstitutionDTO institutionDTO);
 
-
+    InstitutionDTO update(InstitutionDTO institutionDTO);
 
     void joinInstitutionIdWithDomain(User user);
 
