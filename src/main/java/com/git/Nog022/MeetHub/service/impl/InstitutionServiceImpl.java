@@ -9,6 +9,7 @@ import com.git.Nog022.MeetHub.exception.ValidationException;
 
 import com.git.Nog022.MeetHub.repository.InstitutionRepository;
 
+import com.git.Nog022.MeetHub.repository.UserRepository;
 import com.git.Nog022.MeetHub.service.InstitutionService;
 import com.git.Nog022.MeetHub.service.UserService;
 import com.git.Nog022.MeetHub.service.ValidateDomainService;
@@ -43,6 +44,9 @@ public class InstitutionServiceImpl implements InstitutionService {
     private ValidateDomainService validateDomainService;
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public InstitutionResponseDTO save(InstitutionDTO institutionDTO) {
@@ -98,22 +102,17 @@ public class InstitutionServiceImpl implements InstitutionService {
 
     }
 
-
+    //TODO Modelo de teste
     @Override
     public void joinInstitutionIdWithDomain(User user) {
         try {
-            Optional<Institution> optionalInstitution = validateDomainService.validateDomain(user.getEmail());
 
-            if (optionalInstitution.isPresent()) {
-                logger.info("Empresa encontrada");
-                Institution institution = optionalInstitution.get();
+            if(!userRepository.existsByEmail(user.getEmail())){
+                Institution institution = new Institution();
                 institution.getUsers().add(user);
                 user.setInstitution(institution);
                 userService.save(user);
                 institutionRepository.save(institution);
-
-            }else{
-                logger.info("Not found Institution with email " + user.getEmail());
             }
 
         } catch (Exception e) {
