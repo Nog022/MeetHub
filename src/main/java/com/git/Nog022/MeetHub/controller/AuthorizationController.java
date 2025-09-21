@@ -147,7 +147,7 @@ public class AuthorizationController {
             logger.info("saved!!!");
 
             String token = emailService.gerarToken(user.getEmail());
-            String link = "https://meethub-dz8f.onrender.com//auth/checkEmail?token=" + token;
+            String link = "https://meethub-dz8f.onrender.com/auth/checkEmail?token=" + token;
             logger.info("link: {} e email: {}", link, user.getEmail());
             emailService.enviarEmailConfirmacao(user.getEmail(), link);
 
