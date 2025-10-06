@@ -31,7 +31,7 @@ public class Institution  {
     private String cnpj;
 
     @ElementCollection
-    @Column(name = "DOMAIN", length = 255, unique = true)
+    @Column(name = "DOMAIN", length = 255)
     private List<String> domains;
 
 
