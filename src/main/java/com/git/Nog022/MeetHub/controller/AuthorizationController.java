@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 @Slf4j
@@ -118,15 +120,27 @@ public class AuthorizationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody @Validated RegisterDTO registerDTO) {
+    public ResponseEntity<?> register(@RequestBody @Validated RegisterDTO registerDTO) {
 
         logger.info("Iniciando registro");
         logger.info("Dados recebidos: {}", registerDTO);
 
 
-        if(this.usuarioRepository.findByEmail(registerDTO.email()).isPresent()) return ResponseEntity.badRequest().build();
 
-        logger.info("Dados não registrados");
+            if (usuarioRepository.findByEmail(registerDTO.email()).isPresent()) {
+                logger.warn("E-mail já cadastrado: {}", registerDTO.email());
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body(Map.of("error", "E-mail já cadastrado."));
+            }
+
+
+            if (usuarioRepository.findByCpf(registerDTO.cpf()).isPresent()) {
+                logger.warn("CPF já cadastrado: {}", registerDTO.cpf());
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body(Map.of("error", "CPF já cadastrado."));
+            }
         String encryptPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
         logger.info("encryptPassword ");
         User user = new User(
