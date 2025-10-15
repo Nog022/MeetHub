@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public class InstitutionController {
 
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
-    public InstitutionResponseDTO save(@RequestBody @Validated InstitutionDTO institutionDTO) {
+    public ResponseEntity<?> save(@RequestBody @Validated InstitutionDTO institutionDTO) {
         return institutionService.save(institutionDTO);
     }
 
@@ -41,10 +42,8 @@ public class InstitutionController {
 
     @PutMapping("/update")
     @Operation(summary = "Update institution ", description = "Updates the institution")
-    public InstitutionDTO update(@RequestBody @Validated InstitutionDTO institutionDTO) {
-        InstitutionDTO institution = institutionService.update(institutionDTO);
-        log.info("intituicao atualizada: "+institution.toString());
-        return institution;
+    public ResponseEntity<?> update(@RequestBody @Validated InstitutionDTO institutionDTO) {
+        return institutionService.update(institutionDTO);
     }
 
 

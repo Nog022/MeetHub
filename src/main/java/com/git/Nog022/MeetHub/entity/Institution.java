@@ -27,7 +27,6 @@ public class Institution  {
     @Column(name = "CNPJ", length = 14, nullable = false, updatable = false)
     @NotNull
     @NotEmpty
-    @CNPJ(message = "invalid cnpj")
     private String cnpj;
 
     @ElementCollection
