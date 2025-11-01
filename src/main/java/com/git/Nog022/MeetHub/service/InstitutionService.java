@@ -6,6 +6,7 @@ import com.git.Nog022.MeetHub.dto.InstitutionResponseDTO;
 import com.git.Nog022.MeetHub.dto.UserDTO;
 import com.git.Nog022.MeetHub.entity.Institution;
 import com.git.Nog022.MeetHub.entity.User;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,9 @@ import java.util.List;
 @Service
 public interface InstitutionService {
 
-    InstitutionResponseDTO save(InstitutionDTO institutionDTO);
+    ResponseEntity<?> save(InstitutionDTO institutionDTO);
 
-    InstitutionDTO update(InstitutionDTO institutionDTO);
+    ResponseEntity<?> update(InstitutionDTO institutionDTO);
 
     void joinInstitutionIdWithDomain(User user);
 

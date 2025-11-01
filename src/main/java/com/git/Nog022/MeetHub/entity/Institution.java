@@ -27,11 +27,10 @@ public class Institution  {
     @Column(name = "CNPJ", length = 14, nullable = false, updatable = false)
     @NotNull
     @NotEmpty
-    @CNPJ(message = "invalid cnpj")
     private String cnpj;
 
     @ElementCollection
-    @Column(name = "DOMAIN", length = 255, unique = true)
+    @Column(name = "DOMAIN", length = 255)
     private List<String> domains;
 
 

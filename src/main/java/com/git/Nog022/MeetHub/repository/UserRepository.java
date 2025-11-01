@@ -15,4 +15,6 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     Optional<User> findByEmail(@NotEmpty(message = "{field.required}") String email);
 
     Optional<User> findById(Long id);
+
+    boolean existsByEmail(@NotEmpty String email);
 }

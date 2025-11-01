@@ -39,7 +39,6 @@ public class User implements UserDetails {
 
     @Column(name = "CPF", length = 11,unique = true)
     @NotEmpty(message = "{field.required}")
-    @CPF(message = "{invalid.cpf}")
     private String cpf;
 
     @Column(name = "PASSWORD", length = 100)

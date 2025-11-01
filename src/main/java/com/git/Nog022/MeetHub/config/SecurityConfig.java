@@ -40,6 +40,10 @@ public class SecurityConfig  {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
+                        // HealthController e Actuator liberados
+                        .requestMatchers(HttpMethod.GET, "/health").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
+
                         //Auth
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
@@ -79,7 +83,8 @@ public class SecurityConfig  {
                         .requestMatchers(HttpMethod.DELETE, "/api/rooms/delete/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/rooms/listRoomByLocal/**").hasAnyRole("USER", "ADMIN")
 
-
+                        // libera preflight CORS (OPTIONS)
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
 
 

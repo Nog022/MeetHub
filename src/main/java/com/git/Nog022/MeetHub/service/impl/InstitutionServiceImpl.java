@@ -9,6 +9,7 @@ import com.git.Nog022.MeetHub.exception.ValidationException;
 
 import com.git.Nog022.MeetHub.repository.InstitutionRepository;
 
+import com.git.Nog022.MeetHub.repository.UserRepository;
 import com.git.Nog022.MeetHub.service.InstitutionService;
 import com.git.Nog022.MeetHub.service.UserService;
 import com.git.Nog022.MeetHub.service.ValidateDomainService;
@@ -17,13 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -44,11 +43,20 @@ public class InstitutionServiceImpl implements InstitutionService {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
-    public InstitutionResponseDTO save(InstitutionDTO institutionDTO) {
+    public ResponseEntity<?> save(InstitutionDTO institutionDTO) {
         logger.info("entrou em salvar institution");
         User user = userService.findByEmail(institutionDTO.userEmail());
 
+        if (institutionRepository.findByCnpj(institutionDTO.cnpj()) != null) {
+            logger.warn("CNPJ já cadastrado: {}", institutionDTO.cnpj());
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "CNPJ já cadastrado."));
+        }
 
         if(user != null && institutionRepository.findByCnpj(institutionDTO.cnpj()) == null) {
             logger.info("entrou no if");
@@ -64,7 +72,7 @@ public class InstitutionServiceImpl implements InstitutionService {
 
             Institution savedInstitution = institutionRepository.save(institution);
             userService.save(user);
-            return toResponseDTO(savedInstitution, user);
+            return ResponseEntity.ok(toResponseDTO(savedInstitution, user));
 
         }
 
@@ -72,24 +80,33 @@ public class InstitutionServiceImpl implements InstitutionService {
     }
 
     @Override
-    public InstitutionDTO update(InstitutionDTO institutionDTO) {
+    public ResponseEntity<?> update(InstitutionDTO institutionDTO) {
         logger.info("entrou em atualizar institution");
         try{
+            if (institutionRepository.findByCnpj(institutionDTO.cnpj()) != null) {
+                logger.warn("CNPJ já cadastrado: {}", institutionDTO.cnpj());
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body(Map.of("error", "CNPJ já cadastrado."));
+            }
+
             Institution institution = institutionRepository.findByCnpj(institutionDTO.cnpj());
             institution.setName(institutionDTO.name());
             institution.getDomains().clear();
             institution.getDomains().addAll(institutionDTO.domain() == null ? Collections.emptyList() : new ArrayList<>(institutionDTO.domain()));
             institutionRepository.save(institution);
 
+            return ResponseEntity.ok(
+                    new InstitutionDTO(
+                            institution.getId(),
+                            institution.getCnpj(),
+                            institution.getName(),
+                            institution.getDomains(),
+                            null
 
-            return new InstitutionDTO(
-                    institution.getId(),
-                    institution.getCnpj(),
-                    institution.getName(),
-                    institution.getDomains(),
-                    null
-
+                    )
             );
+
         } catch (Exception e) {
             logger.error("Erro atualizar institution", e);
             throw new RuntimeException(e);
@@ -98,22 +115,17 @@ public class InstitutionServiceImpl implements InstitutionService {
 
     }
 
-
+    //TODO Modelo de teste
     @Override
     public void joinInstitutionIdWithDomain(User user) {
         try {
-            Optional<Institution> optionalInstitution = validateDomainService.validateDomain(user.getEmail());
 
-            if (optionalInstitution.isPresent()) {
-                logger.info("Empresa encontrada");
-                Institution institution = optionalInstitution.get();
+            if(!userRepository.existsByEmail(user.getEmail())){
+                Institution institution = new Institution();
                 institution.getUsers().add(user);
                 user.setInstitution(institution);
                 userService.save(user);
                 institutionRepository.save(institution);
-
-            }else{
-                logger.info("Not found Institution with email " + user.getEmail());
             }
 
         } catch (Exception e) {

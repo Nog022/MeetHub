@@ -1,17 +1,25 @@
 package com.git.Nog022.MeetHub.service.impl;
 
-import com.git.Nog022.MeetHub.config.SecurityFilter;
+
 import com.git.Nog022.MeetHub.service.EmailService;
 
+import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Content;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import com.sendgrid.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -19,7 +27,9 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-import static java.security.KeyRep.Type.SECRET;
+import com.sendgrid.helpers.mail.objects.Email;
+
+
 
 
 @Service
@@ -28,23 +38,36 @@ public class EmailServiceImpl implements EmailService {
 
     public static Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
 
-    @Autowired
-    private JavaMailSender mailSender;
     //TODO mudar a conforma de passagem da chave para o token
     private final Key key = Keys.hmacShaKeyFor("sua-chave-secreta-com-mais-de-32-caracteres!".getBytes());
+
+    @Value("${SENDGRID_API_KEY}")
+    private String sendgridApiKey;
 
     @Override
     public void enviarEmailConfirmacao(String destinatario, String link) {
         logger.info("enviarEmailConfirmacao()");
 
+        Email from = new Email("meethub.contato@gmail.com");
+        String subject = "Confirme seu e-mail - MeetHub";
+        Email to = new Email(destinatario);
+        Content content = new Content("text/plain", "Clique no link para confirmar seu e-mail:\n" + link);
+        Mail mail = new Mail(from, subject, to, content);
 
+        SendGrid sg = new SendGrid(sendgridApiKey);
+        Request request = new Request();
 
-        SimpleMailMessage mensagem = new SimpleMailMessage();
-        mensagem.setTo(destinatario);
-        mensagem.setSubject("Confirme seu e-mail - MeetHub");
-        mensagem.setText("Clique no link para confirmar seu e-mail:\n" + link);
-        logger.info("send confirmation email");
-        mailSender.send(mensagem);
+        try {
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+
+            Response response = sg.api(request);
+
+            logger.info("Email enviado! Status: {}", response.getStatusCode());
+        } catch (IOException ex) {
+            logger.error("Erro ao enviar e-mail", ex);
+        }
     }
 
 
