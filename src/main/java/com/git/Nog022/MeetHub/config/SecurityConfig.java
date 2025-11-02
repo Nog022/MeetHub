@@ -71,6 +71,7 @@ public class SecurityConfig  {
                         .requestMatchers(HttpMethod.DELETE, "/api/reservations/delete/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/reservations/listReservations").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/reservations/listReservationsByInstitution/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reservations/listReservationsByRoomAndDate/**").hasAnyRole("USER", "ADMIN")
 
                         //Room
                         .requestMatchers(HttpMethod.POST, "/api/rooms/save").hasRole("ADMIN")

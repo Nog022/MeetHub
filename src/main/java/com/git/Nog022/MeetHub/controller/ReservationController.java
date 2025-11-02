@@ -3,7 +3,6 @@ package com.git.Nog022.MeetHub.controller;
 import com.git.Nog022.MeetHub.config.AuthenticatedUserProvider;
 import com.git.Nog022.MeetHub.dto.ListReservarionDTO;
 import com.git.Nog022.MeetHub.dto.ReservationDTO;
-import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.entity.Reservation;
 import com.git.Nog022.MeetHub.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,10 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -48,6 +49,16 @@ public class ReservationController {
     public Reservation reservationById(@PathVariable Integer id) {
         return reservationService.reservationById(id);
     }
+
+    @GetMapping("/listReservationsByRoomAndDate/{roomId}/{date}")
+    public ResponseEntity<List<ReservationDTO>> listReservationsByRoomAndDate(
+            @PathVariable Long roomId,
+            @PathVariable LocalDateTime date) {
+
+
+        return reservationService.listReservationsByRoomAndDate(roomId, date);
+    }
+
 
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -19,11 +19,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -185,12 +188,53 @@ public class ReservationServiceImpl implements ReservationService {
         );
     }
 
+    private List<ReservationDTO> toResponseReservationDTOList(List<Reservation> reservations) {
+        return reservations.stream()
+                .map(reservation -> new ReservationDTO(
+                        reservation.getPersonName(),
+                        reservation.getRoom().getId(),
+                        reservation.getDate(),
+                        reservation.getStartTime(),
+                        reservation.getEndTime(),
+                        reservation.getEventDescription(),
+                        reservation.getInstitution().getId()
+                ))
+                .toList();
+    }
+
+
+
 
 
     @Override
     public Reservation reservationById(Integer id) {
         return reservationRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not find"));
     }
+
+    @Override
+    public ResponseEntity<List<ReservationDTO>> listReservationsByRoomAndDate(Long roomId, LocalDateTime date) {
+        logger.info("Iniciando busca de reservas para sala ID: {} e data: {}", roomId, date);
+
+        try {
+            List<Reservation> reservations = reservationRepository.reservationByRoomAndDate(roomId, date);
+
+            if (reservations == null || reservations.isEmpty()) {
+                logger.warn("Nenhuma reserva encontrada para a sala ID: {} na data: {}", roomId, date);
+                return ResponseEntity.noContent().build();
+            }
+
+            List<ReservationDTO> reservationDTOs = toResponseReservationDTOList(reservations);
+            logger.info("Foram encontradas {} reservas.", reservationDTOs.size());
+
+            return ResponseEntity.ok(reservationDTOs);
+
+        } catch (Exception e) {
+            logger.error("Erro ao buscar reservas para a sala ID: {} na data: {}. Detalhes: {}", roomId, date, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.emptyList());
+        }
+    }
+
 
 
     private boolean checkReservation(ReservationDTO reservation) {
