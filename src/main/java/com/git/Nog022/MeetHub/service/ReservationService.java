@@ -4,10 +4,12 @@ import com.git.Nog022.MeetHub.dto.ListReservarionDTO;
 import com.git.Nog022.MeetHub.dto.ReservationDTO;
 import com.git.Nog022.MeetHub.entity.Local;
 import com.git.Nog022.MeetHub.entity.Reservation;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -25,4 +27,7 @@ public interface ReservationService {
     List<ListReservarionDTO> listReservationsByInstitution(Long id, LocalDate date, Integer capacity,String roomName, String localName);
 
     Reservation reservationById(Integer id);
+
+    ResponseEntity<List<ReservationDTO>> listReservationsByRoomAndDate(Long roomId, LocalDateTime date);
+
 }
