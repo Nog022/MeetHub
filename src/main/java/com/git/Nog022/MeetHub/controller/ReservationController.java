@@ -14,10 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -64,6 +66,16 @@ public class ReservationController {
         String role = authenticatedUserProvider.getRole(request);
         reservationService.delete(userId, id, role);
     }
+
+    @GetMapping("/listReservationsByRoomAndDate/{roomId}/{date}")
+    public ResponseEntity<List<ReservationDTO>> listReservationsByRoomAndDate(
+            @PathVariable Long roomId,
+            @PathVariable LocalDateTime date) {
+
+
+        return reservationService.listReservationsByRoomAndDate(roomId, date);
+    }
+
 
     @GetMapping("/listReservations")
     @Operation(summary = "List all reservations", description = "Returns a list of all registered reservations")
