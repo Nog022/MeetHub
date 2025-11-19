@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/locations")
-@Tag(name = "Local", description = "Gerenciamento de salas de reunião")
+@Tag(name = "Localização", description = "Gerenciamento de localizações de salas de reunião")
 public class LocalController {
 
     @Autowired
@@ -25,45 +25,71 @@ public class LocalController {
 
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create a new local", description = "Creates a new local entry in the system")
+    @Operation(
+            summary = "Criar uma nova localização",
+            description = "Cria um novo registro de localização no sistema"
+    )
     public ResponseEntity<LocalDTO> save(@RequestBody @Validated LocalDTO local) {
         return localService.save(local);
     }
 
     @GetMapping("/listLocal")
-    @Operation(summary = "List all locals", description = "Returns a list of all registered locals")
+    @Operation(
+            summary = "Listar todas as localizações",
+            description = "Retorna uma lista com todas as localizações cadastradas"
+    )
+
     public List<Local> listLocal() {
         return localService.listLocal();
     }
 
     @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Delete a local", description = "Deletes the local by its ID")
+    @Operation(
+            summary = "Excluir uma localização",
+            description = "Exclui a localização pelo seu ID"
+    )
+
     public void delete(@PathVariable Long id) {
         localService.delete(id);
     }
 
     @GetMapping("/localById/{id}")
-    @Operation(summary = "Get a local by ID", description = "Returns the details of a local by its ID")
+    @Operation(
+            summary = "Buscar localização por ID",
+            description = "Retorna os detalhes de uma localização pelo seu ID"
+    )
+
     public LocalDTO localById(@PathVariable Long id) {
         return localService.localDTOById(id);
     }
 
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Update an existing local", description = "Updates the information of an existing local")
+    @Operation(
+            summary = "Atualizar uma localização existente",
+            description = "Atualiza as informações de uma localização existente"
+    )
+
     public void update(@RequestBody @Validated LocalDTO local) {
         localService.update(local);
     }
 
     @GetMapping("/findAddressByZipCode/{cep}")
-    @Operation(summary = "Get a info by cep", description = "Returns the details of a local by its cep")
+    @Operation(
+            summary = "Buscar localização por CEP",
+            description = "Retorna os detalhes de uma localização pelo seu CEP"
+    )
+
     public ViaCepResponseDTO findAddressByZipCode(@PathVariable String cep) {
         return localService.findAddressByZipCode(cep);
     }
 
     @GetMapping("/listLocalByInstitution/{id}")
-    //@Operation(summary = "List all rooms", description = "Returns a list of all registered rooms")
+    @Operation(
+            summary = "Listar localizações por instituição",
+            description = "Retorna uma lista de todas as localizações cadastradas de uma instituição específica pelo seu ID"
+    )
     public List<LocalDTO> listLocalByInstitution(@PathVariable Long id) {
         return localService.listLocalByInstitution(id);
     }

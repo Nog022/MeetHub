@@ -23,7 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/reservations")
-@Tag(name = "Reservation", description = "Meeting room management")
+@Tag(name = "Reserva", description = "Gerenciamento de reservas de salas de reunião")
 public class ReservationController {
 
     public static Logger logger = LoggerFactory.getLogger(ReservationController.class);
@@ -37,7 +37,10 @@ public class ReservationController {
 
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create a new reservation", description = "Creates a new reservation entry in the system")
+    @Operation(
+            summary = "Criar uma nova reserva",
+            description = "Cria um novo registro de reserva no sistema"
+    )
     public ReservationDTO save(@RequestBody ReservationDTO reservation, HttpServletRequest request) {
         logger.info("Entered the save controller");
         Long userId = authenticatedUserProvider.getUserId(request);
@@ -45,11 +48,18 @@ public class ReservationController {
     }
 
     @GetMapping("/reservationById/{id}")
-    @Operation(summary = "Get reservation by ID", description = "Returns the details of a reservation by its ID")
+    @Operation(
+            summary = "Buscar reserva por ID",
+            description = "Retorna os detalhes de uma reserva pelo seu ID"
+    )
     public Reservation reservationById(@PathVariable Integer id) {
         return reservationService.reservationById(id);
     }
 
+    @Operation(
+            summary = "Listar reservas por sala e data",
+            description = "Retorna uma lista de reservas para uma sala específica em uma data específica"
+    )
     @GetMapping("/listReservationsByRoomAndDate/{roomId}/{date}")
     public ResponseEntity<List<ReservationDTO>> listReservationsByRoomAndDate(
             @PathVariable Long roomId,
@@ -60,16 +70,22 @@ public class ReservationController {
     }
 
 
-    @PutMapping("/update")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Update an existing reservation", description = "Updates the information of an existing reservation")
-    public void update(@RequestBody @Validated Reservation reservation) {
-        reservationService.update(reservation);
-    }
+//    @PutMapping("/update")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    @Operation(
+//            summary = "Atualizar uma reserva existente",
+//            description = "Atualiza as informações de uma reserva existente"
+//    )
+//    public void update(@RequestBody @Validated Reservation reservation) {
+//        reservationService.update(reservation);
+//    }
 
     @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Delete a reservation", description = "Deletes the reservation by its ID")
+    @Operation(
+            summary = "Excluir uma reserva",
+            description = "Exclui a reserva pelo seu ID"
+    )
     public void delete(@PathVariable Integer id, HttpServletRequest request) {
         Long userId = authenticatedUserProvider.getUserId(request);
         String role = authenticatedUserProvider.getRole(request);
@@ -77,13 +93,19 @@ public class ReservationController {
     }
 
     @GetMapping("/listReservations")
-    @Operation(summary = "List all reservations", description = "Returns a list of all registered reservations")
+    @Operation(
+            summary = "Listar todas as reservas",
+            description = "Retorna uma lista com todas as reservas cadastradas"
+    )
     public List<Reservation> listReservations() {
         return reservationService.listReservations();
     }
 
     @GetMapping("/listReservationsByInstitution/{id}")
-    @Operation(summary = "List all reservations by Institution id", description = "Returns a list of all registered reservations")
+    @Operation(
+            summary = "Listar reservas por sala",
+            description = "Retorna uma lista de reservas de uma instituição filtrando por sala, data, capacidade, nome da sala e nome do local"
+    )
     public List<ListReservarionDTO> listReservationsByRoom(
             @PathVariable Long id,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,

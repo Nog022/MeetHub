@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/users")
-@Tag(name = "User", description = "User management")
+@Tag(name = "Usuário", description = "Gerenciamento de usuários")
 public class UserController {
     public static Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -25,27 +25,42 @@ public class UserController {
 
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create a new user", description = "Creates a new user entry in the system")
+    @Operation(
+            summary = "Criar um novo usuário",
+            description = "Cria um novo registro de usuário no sistema"
+    )
+
     public User save(@RequestBody @Validated User user) {
         logger.info("Entered save");
         return userService.save(user);
     }
 
     @DeleteMapping("/delete/{id}")
-    @Operation(summary = "Delete a user", description = "Deletes a user by their ID")
+    @Operation(
+            summary = "Excluir um usuário",
+            description = "Exclui um usuário pelo seu ID"
+    )
+
     public void delete(@PathVariable Integer id) {
         userService.delete(id);
     }
 
     @PutMapping("/update/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Update user details", description = "Updates the details of an existing user by their ID")
+    @Operation(
+            summary = "Atualizar dados do usuário",
+            description = "Atualiza os dados de um usuário existente pelo seu ID"
+    )
+
     public void update(@PathVariable Integer id, @RequestBody @Validated User user) {
         userService.update(id, user);
     }
 
     @GetMapping("/listAll")
-    @Operation(summary = "List all users", description = "Returns a list of all registered users")
+    @Operation(
+            summary = "Listar todos os usuários",
+            description = "Retorna uma lista com todos os usuários cadastrados"
+    )
     public List<User> listUser() {
         return userService.listUser();
     }

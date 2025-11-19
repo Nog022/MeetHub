@@ -5,10 +5,11 @@ import com.git.Nog022.MeetHub.dto.*;
 import com.git.Nog022.MeetHub.entity.User;
 import com.git.Nog022.MeetHub.enums.UserRole;
 import com.git.Nog022.MeetHub.repository.UserRepository;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.git.Nog022.MeetHub.service.EmailService;
 import com.git.Nog022.MeetHub.service.InstitutionService;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/auth")
 @Slf4j
+@Tag(name = "Autorização", description = "Gerenciamento de login, registro e confirmação de e-mail")
 public class AuthorizationController {
 
     public static Logger logger = LoggerFactory.getLogger(AuthorizationController.class);
@@ -48,6 +50,10 @@ public class AuthorizationController {
     private InstitutionService institutionService;
 
     @PostMapping("/login")
+    @Operation(
+            summary = "Login do usuário",
+            description = "Autentica um usuário no sistema e retorna um token JWT juntamente com informações do usuário e da instituição associada"
+    )
     public ResponseEntity<?> login(@RequestBody @Validated AuthorizationDTO data) {
         try {
             logger.info("Iniciando login");
@@ -118,6 +124,10 @@ public class AuthorizationController {
     }
 
     @PostMapping("/register")
+    @Operation(
+            summary = "Registrar novo usuário",
+            description = "Registra um novo usuário no sistema e envia um e-mail de confirmação"
+    )
     public ResponseEntity<User> register(@RequestBody @Validated RegisterDTO registerDTO) {
 
         logger.info("Iniciando registro");
@@ -161,6 +171,11 @@ public class AuthorizationController {
     }
 
     @GetMapping("/checkEmail")
+    @Operation(
+            summary = "Confirmar e-mail do usuário",
+            description = "Valida o token enviado por e-mail e confirma o e-mail do usuário"
+    )
+
     public ResponseEntity<String> confirmarEmail(@RequestParam String token) {
         try {
             logger.info("checkEmail()");
