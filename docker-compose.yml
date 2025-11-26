@@ -1,9 +1,19 @@
 version: '3.8'
 services:
+  meet-hub-frontend:
+    image: nog022/meet-hub-frontend:latest
+    container_name: frontend
+    depends_on:
+      - meet-hub
+    ports:
+      - 80:80
+    networks:
+      - broker-kafka
+
   phpmyadmin:
     image: phpmyadmin
     ports:
-      - 8000:80
+      - 8085:80
     networks:
       - broker-kafka
 
@@ -28,7 +38,7 @@ services:
       MYSQL_DATABASE: meetHubDB
       MYSQL_ROOT_PASSWORD: admin
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
